@@ -3,8 +3,8 @@ import time
 
 import pytest
 
-import utils/Connection
-
+import BrainStorm
+from BrainStorm.utils import Connection
 
 
 _PORT = 1234

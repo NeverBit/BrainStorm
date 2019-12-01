@@ -1,12 +1,12 @@
 import socket
 import struct
 import time
-from cli import CommandLineInterface
+from .cli import CommandLineInterface
 
 cli = CommandLineInterface()
 
 @cli.command
-def upload(address, user, thought):
+def upload_thought(address, user, thought):
     ip_port_list = address.split(':')
     ip_port_tup = (ip_port_list[0],int(ip_port_list[1]))
     soc = socket.socket()

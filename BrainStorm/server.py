@@ -3,7 +3,7 @@ import struct
 import time
 import threading
 from pathlib import Path
-from cli import CommandLineInterface
+from .cli import CommandLineInterface
 
 cli = CommandLineInterface()
 
@@ -52,7 +52,7 @@ class Single_user_handler(threading.Thread):
             files_lock.release()
 
 @cli.command
-def run(address,data):
+def run_server(address,data):
     ip_port_list = address.split(':')
     ip_port_tup = (ip_port_list[0],int(ip_port_list[1]))
     data_dir = data # Just because 'data' is a bad argument name

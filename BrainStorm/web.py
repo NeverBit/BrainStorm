@@ -1,4 +1,4 @@
-from website import Website
+from .website import Website
 from pathlib import Path
 
 _data_dir = None

@@ -3,7 +3,8 @@ import time
 
 import pytest
 
-from listener import Listener
+import BrainStorm
+from BrainStorm.utils import Listener
 
 
 _PORT = 1234
