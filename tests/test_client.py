@@ -3,13 +3,15 @@ import multiprocessing
 import pathlib
 import subprocess
 import os
+import io
 import socket
 import struct
 import time
 
 import pytest
 
-from BrainStorm import upload_thought
+from BrainStorm import upload_thoughts
+from BrainStorm import proto
 
 _SERVER_ADDRESS = '127.0.0.1',5000
 _SERVER_ADDRESS_FOR_UT = '127.0.0.1:5000'
@@ -19,10 +21,8 @@ _CLIENT_PATH = pathlib.Path(__file__).absolute().parent.parent / 'client.py'
 _HEADER_FORMAT = 'LLI'
 _HEADER_SIZE = struct.calcsize(_HEADER_FORMAT)
 
-_USER_1 = 1
-_USER_2 = 2
-_THOUGHT_1 = "I'm hungry"
-_THOUGHT_2 = "I'm sleepy"
+_TEST_HEADER_1 = b'*\x00\x00\x00\x00\x00\x00\x00\n\x00\x00\x00Dan Gittik`H\xb5)m'
+_H1_NAME = 'Dan Gittik'
 
 
 @pytest.fixture
@@ -41,38 +41,33 @@ def get_message():
         process.terminate()
         process.join()
 
+@pytest.fixture
+def get_mind_sample():
+    snapshot = b'\x00' * 64
+    snapshot += struct.pack('II',1,1)
+    snapshot += b'\xff\x00\x00'
+    snapshot += struct.pack('II',1,1)
+    snapshot += b'\xff\x00\x00\x00'
+    snapshot += b'\x00' * 16
+    return io.BytesIO(_TEST_HEADER_1 + snapshot)
 
-def test_connection(get_message):
-    upload_thought(_SERVER_ADDRESS_FOR_UT, _USER_1, _THOUGHT_1)
+def test_connection(get_message,get_mind_sample):
+    upload_thoughts(*_SERVER_ADDRESS, get_mind_sample)
     message = get_message()
     assert message
 
 
-def test_user_id(get_message):
-    upload_thought(_SERVER_ADDRESS_FOR_UT, _USER_1, _THOUGHT_1)
-    user_id, timestamp, thought = get_message()
-    assert user_id == _USER_1
-    upload_thought(_SERVER_ADDRESS_FOR_UT, _USER_2, _THOUGHT_1)
-    user_id, timestamp, thought = get_message()
-    assert user_id == _USER_2
+def test_hello_msg_recvd(get_message,get_mind_sample):
+    upload_thoughts(*_SERVER_ADDRESS, get_mind_sample)
+    message = get_message()
+    h = proto.Hello.deserialize(message)
+    assert h
 
-
-def test_thought(get_message):
-    upload_thought(_SERVER_ADDRESS_FOR_UT, _USER_1, _THOUGHT_1)
-    user_id, timestamp, thought = get_message()
-    assert thought == _THOUGHT_1
-    upload_thought(_SERVER_ADDRESS_FOR_UT, _USER_1, _THOUGHT_2)
-    user_id, timestamp, thought = get_message()
-    assert thought == _THOUGHT_2
-
-
-def test_timestamp(get_message):
-    upload_thought(_SERVER_ADDRESS_FOR_UT, _USER_1, _THOUGHT_1)
-    user_id, timestamp, thought = get_message()
-    _assert_now(timestamp)
-    upload_thought(_SERVER_ADDRESS_FOR_UT, _USER_2, _THOUGHT_2)
-    user_id, timestamp, thought = get_message()
-    _assert_now(timestamp)
+def test_name_recvd(get_message,get_mind_sample):
+    upload_thoughts(*_SERVER_ADDRESS, get_mind_sample)
+    message = get_message()
+    h = proto.Hello.deserialize(message)
+    assert h.uname == _H1_NAME
 
 
 def _run_server(pipe):
@@ -89,11 +84,12 @@ def _run_server(pipe):
 
 def _handle_connection(connection, pipe):
     with connection:
-        header_data = _receive_all(connection, _HEADER_SIZE)
-        user_id, timestamp, size = struct.unpack(_HEADER_FORMAT, header_data)
-        data = _receive_all(connection, size)
-        thought = data.decode()
-        pipe.send([user_id, timestamp, thought])
+        print('a')
+        header_data = _receive_all(connection, 4)
+        print('b')
+        leng, = struct.unpack('!I',header_data)
+        data = _receive_all(connection, leng)
+        pipe.send(data)
 
 
 def _receive_all(connection, size):
