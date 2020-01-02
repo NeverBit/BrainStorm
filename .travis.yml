@@ -8,7 +8,7 @@ install:
 
 # command to run tests
 script:
-  - pytest --cov-report term --cov=investpy tests/
+  - pytest --cov-report term --cov=BrainStorm tests/
 
 # Push the results back to codecov
 after_success:
