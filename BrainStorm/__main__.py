@@ -1,5 +1,4 @@
 import sys
-from .thought import Thought
 from .utils import Connection,Listener
 from .server import run_server
 from .client import upload_thoughts
