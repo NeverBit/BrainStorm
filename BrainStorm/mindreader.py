@@ -1,7 +1,7 @@
 import datetime as dt
 import struct
 from .image import image
-from .snapshot import snapshot
+from .snapshot import Snapshot
 
 class reader:
     def __init__(self,mindStream):
@@ -37,5 +37,5 @@ class reader:
         # Emotions
         hunger, thirst, exha, happy = struct.unpack('ffff',self.file.read(16))
         emotions = (hunger,thirst,exha,happy)
-        return snapshot(time, translation, rotation,color_img,dep_img,emotions)
+        return Snapshot(time, translation, rotation,color_img,dep_img,emotions)
 

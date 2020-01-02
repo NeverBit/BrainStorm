@@ -1,5 +1,5 @@
 
-class snapshot:
+class Snapshot:
     def __init__(self,time_ms,translation,rotation,col_img,dep_img,emotions):
         #epoch = dt.datetime.fromtimestamp(0)
         #self.datetime = epoch + dt.timedelta(milliseconds=time_ms)

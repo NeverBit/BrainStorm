@@ -2,7 +2,7 @@ import socket
 import struct
 import time
 from .connection import Connection
-from .mindreader import reader, snapshot
+from .mindreader import reader, Snapshot
 from .proto import Hello, Config
 from .proto import Snapshot as SnapshotMsg
 from .image import image
