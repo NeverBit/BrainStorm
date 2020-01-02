@@ -25,7 +25,7 @@ def test_image_write(tmp_path):
                                 b'\x00\xff\x00'
                                 b'\x20\x20\x00'
                                 b'\x80\x80\xff'))
-    snap = Snapshot(time_ms,translation,rotation,col_img,dep_img,emotions)
+    snap = Snapshot(0,None,None,img,None,None)
     con = parser_context(my_dir)
     parsers.col_img_parser(con,snap)
     expected_file = my_dir / 'color_image.jpg'
