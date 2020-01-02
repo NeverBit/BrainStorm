@@ -3,6 +3,7 @@ import math
 import os
 from BrainStorm import image as im
 from BrainStorm import parsers
+from BrainStorm import snapshot
 
 class parser_context:
     def __init__(self,directory):
@@ -24,8 +25,9 @@ def test_image_write(tmp_path):
                                 b'\x00\xff\x00'
                                 b'\x20\x20\x00'
                                 b'\x80\x80\xff'))
+    snap = Snapshot(time_ms,translation,rotation,col_img,dep_img,emotions)
     con = parser_context(my_dir)
-    parsers.col_img_parser(con,img)
+    parsers.col_img_parser(con,snap)
     expected_file = my_dir / 'color_image.jpg'
     assert expected_file.exists()
     assert expected_file.is_file()
@@ -35,8 +37,9 @@ def test_translation_write(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
     translation = {'x':1.1,'y':2.2,'z':3.3}
+    snap = Snapshot(0,translation,None,None,None,None)
     con = parser_context(my_dir)
-    parsers.trans_parser(con,translation)
+    parsers.trans_parser(con,snap)
     expected_file = my_dir / 'translation.json'
     assert expected_file.exists()
     assert expected_file.is_file()
@@ -46,8 +49,9 @@ def test_translation_content(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
     translation = {'x':1.1,'y':2.2,'z':3.3}
+    snap = Snapshot(0,translation,None,None,None,None)
     con = parser_context(my_dir)
-    parsers.trans_parser(con,translation)
+    parsers.trans_parser(con,snap)
     expected_file = my_dir / 'translation.json'
     j = json.load(open(expected_file))
     assert 'x' in j

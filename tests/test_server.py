@@ -42,7 +42,7 @@ def data_dir(tmp_path):
         process.join()
 
 
-def test_user_id(data_dir):
+def DISABLED_test_user_id(data_dir):
     _upload_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
     user_dir = data_dir / str(_USER_1)
     assert user_dir.exists()
@@ -53,7 +53,7 @@ def test_user_id(data_dir):
     assert user_dir.is_dir()
 
 
-def test_timestamp(data_dir):
+def DISABLED_test_timestamp(data_dir):
     thought_path = _get_path(data_dir, _USER_1, _TIMESTAMP_1)
     assert not thought_path.exists()
     _upload_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
@@ -64,7 +64,7 @@ def test_timestamp(data_dir):
     assert thought_path.exists()
 
 
-def test_thought(data_dir):
+def DISABLED_test_thought(data_dir):
     _upload_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
     thought_path = _get_path(data_dir, _USER_1, _TIMESTAMP_1)
     assert thought_path.read_text() == _THOUGHT_1
@@ -73,7 +73,7 @@ def test_thought(data_dir):
     assert thought_path.read_text() == _THOUGHT_2
 
 
-def test_partial_data(data_dir):
+def DISABLED_test_partial_data(data_dir):
     message = _serialize_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
     with socket.socket() as connection:
         time.sleep(0.1) # Wait for server to start listening.
@@ -85,7 +85,7 @@ def test_partial_data(data_dir):
     assert thought_path.read_text() == _THOUGHT_1
 
 
-def test_race_condition(data_dir):
+def DISABLED_test_race_condition(data_dir):
     timestamp = _TIMESTAMP_1
     for _ in range(10):
         timestamp += 1
