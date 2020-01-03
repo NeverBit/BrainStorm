@@ -58,6 +58,7 @@ class Config:
 
 class Snapshot:
     def __init__(self,timestamp,translation,rotation,col_img,dep_img,feelings):
+        print (' @@@ Debug initing proto snapshot msg ')
         self.timestamp = timestamp
         self.translation = translation
         self.rotation = rotation
@@ -65,6 +66,7 @@ class Snapshot:
         self.dep_img = dep_img
         self.feelings = feelings
     def serialize(self):
+        print (' @@@ Debug self serializing snapshot')
         data = struct.pack('!Qddd',self.timestamp,self.translation['x'],
                                                 self.translation['y'],
                                                 self.translation['z'])
@@ -72,16 +74,16 @@ class Snapshot:
                                     self.rotation['y'],
                                     self.rotation['z'],
                                     self.rotation['w'])
-        data += struct.pack('!II',self.col_img.w,self.col_img.h)
+        data += struct.pack('!II',self.col_img.width,self.col_img.height)
         data += self.col_img.data
-        data += struct.pack('!II',self.dep_img.w,self.dep_img.h)
+        data += struct.pack('!II',self.dep_img.width,self.dep_img.height)
         data += self.dep_img.data
         data += struct.pack('!ffff',*self.feelings)
         return data
     def __repr__(self):
         return (f'<Snapshot; Time: {self.timestamp}, Trans: {self.translation},'
-                f'Rot: {self.rotation}, Col Img: {self.col_img.h}x{self.col_img.w}'
-                f'Dep Img: {self.dep_img.h}x{self.dep_img.w}, Feels: {self.feelings}')
+                f'Rot: {self.rotation}, Col Img: {self.col_img.height}x{self.col_img.width}'
+                f'Dep Img: {self.dep_img.height}x{self.dep_img.width}, Feels: {self.feelings}')
     @classmethod
     def deserialize(cls,data):
         offset = 0

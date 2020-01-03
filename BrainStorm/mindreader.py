@@ -2,8 +2,26 @@ import datetime as dt
 import struct
 from .image import image
 from .snapshot import Snapshot
+from .cortex_pb2 import User as UserPb
+from .cortex_pb2 import Snapshot as SnapshotPb
 
-class reader:
+
+readersStore = {}
+
+
+def get_reader(versionNum):
+    return readersStore[versionNum]
+
+
+def reader(versionNum):
+    def wrapper(clss):
+        readersStore[versionNum] = clss
+        return clss
+    return wrapper
+
+
+@reader(1)
+class reader_v1:
     def __init__(self,mindStream):
         self.file = mindStream 
         # Reading header
@@ -37,5 +55,32 @@ class reader:
         # Emotions
         hunger, thirst, exha, happy = struct.unpack('ffff',self.file.read(16))
         emotions = (hunger,thirst,exha,happy)
-        return Snapshot(time, translation, rotation,color_img,dep_img,emotions)
+        return SnapshotBinary(time, translation, rotation,color_img,dep_img,emotions)
 
+
+@reader(2)
+class reader_v2:
+    def __init__(self,mindStream):
+        self.file = mindStream
+        # Reading header
+        userLen, = struct.unpack('I',self.file.read(4))
+        print(f'user len: {userLen}')
+        user = UserPb()
+        user.ParseFromString(self.file.read(userLen))
+
+        self.uid = user.user_id 
+        self.uname = user.username
+        self.bday = user.birthday
+        if (user.gender == 0):
+            self.gender = 'm' 
+        elif  (user.gender == 1):
+            self.gender = 'f'
+        else:
+            self.gender = 'o'
+        
+    def read_snapshot(self):
+        snapLen, = struct.unpack('I',self.file.read(4))
+        print(f'snap len: {snapLen}')
+        snap = SnapshotPb()
+        snap.ParseFromString(self.file.read(snapLen))
+        return snap
