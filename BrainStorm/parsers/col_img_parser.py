@@ -3,25 +3,8 @@ from pathlib import Path
 from PIL import Image as PIL
 
 
-registered_parsers = {}
-
-
-def parser(name):
-    def wrapper(func):
-        registered_parsers[name] = func
-        return func
-    return wrapper
-
-@parser('translation')
-def trans_parser(context,snapshot):
-    save_path = context.dir / 'translation.json'
-    with open(save_path,'w') as f:
-        j = json.dumps(snapshot.translation)
-        f.write(j)
-
-@parser('color_image')
-def col_img_parser(context,snapshot):
-    save_path = context.dir / 'color_image.jpg'
+def parse_col_img(context,snapshot):
+    save_path = context.get_storage_path() / 'color_image.jpg'
     image = snapshot.col_img
     def split3(data):
         for i in range(0,image.width*image.height*3,3):
@@ -32,3 +15,7 @@ def col_img_parser(context,snapshot):
     pil_image.putdata(finaldata)
     pil_image.save(save_path)
     print(f' @@@ Debug writing a picture of dimension: {image.width}x{image.height} -- done')
+    img_location = json.dumps({'path':save_path.absolute().name})
+    print(f' @@@ DEBUG Saving image location json : {img_location}')
+    context.save('col_img_location.txt',img_location)
+parse_col_img.field = 'color_image'

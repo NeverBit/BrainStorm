@@ -5,13 +5,22 @@ from BrainStorm import image as im
 from BrainStorm import parsers
 from BrainStorm import Snapshot
 
+
 class parser_context:
-    def __init__(self,directory):
-        self.dir = directory
+    def __init__(self,save_dir):
+        self.dir = save_dir
+    def get_storage_path(self):
+        return self.dir
+    def save(self,filename,data):
+        filepath = self.dir / filename
+        with filepath.open('w') as f:
+            f.write(data)
+        print(f' @@@ DEBUG Saved {len(data)} bytes to {filepath}')
+
 
 
 def test_translation_parser_registered():
-    assert 'translation' in parsers.registered_parsers
+    assert 'pose' in parsers.registered_parsers
 
 
 def test_col_img_parser_registered():
@@ -27,7 +36,7 @@ def test_image_write(tmp_path):
                                 b'\x80\x80\xff'))
     snap = Snapshot(0,None,None,img,None,None)
     con = parser_context(my_dir)
-    parsers.col_img_parser(con,snap)
+    parsers.registered_parsers['color_image'](con,snap)
     expected_file = my_dir / 'color_image.jpg'
     assert expected_file.exists()
     assert expected_file.is_file()
@@ -37,10 +46,11 @@ def test_translation_write(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
     translation = {'x':1.1,'y':2.2,'z':3.3}
-    snap = Snapshot(0,translation,None,None,None,None)
+    rot = {'x':1.1,'y':2.2,'z':3.3,'w':4.4}
+    snap = Snapshot(0,translation,rot,None,None,None)
     con = parser_context(my_dir)
-    parsers.trans_parser(con,snap)
-    expected_file = my_dir / 'translation.json'
+    parsers.registered_parsers['pose'](con,snap)
+    expected_file = my_dir / 'pose.json'
     assert expected_file.exists()
     assert expected_file.is_file()
 
@@ -49,13 +59,16 @@ def test_translation_content(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
     translation = {'x':1.1,'y':2.2,'z':3.3}
+    rot = {'x':1.1,'y':2.2,'z':3.3,'w':4.4}
     snap = Snapshot(0,translation,None,None,None,None)
     con = parser_context(my_dir)
-    parsers.trans_parser(con,snap)
-    expected_file = my_dir / 'translation.json'
+    parsers.registered_parsers['pose'](con,snap)
+    expected_file = my_dir / 'pose.json'
     j = json.load(open(expected_file))
-    assert 'x' in j
-    assert 'y' in j
-    assert 'z' in j
-    for k in j:
-        assert math.isclose(j[k],translation[k])
+    assert 'translation' in j
+    retr_trans = j['translation']
+    assert 'x' in retr_trans
+    assert 'y' in retr_trans
+    assert 'z' in retr_trans
+    for k in retr_trans:
+        assert math.isclose(retr_trans[k],translation[k])

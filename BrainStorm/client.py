@@ -1,10 +1,12 @@
+import bson
+import json
+import requests
 import socket
 import struct
 import time
 from .connection import Connection
 from .mindreader import get_reader
-from .proto import Hello, Config
-from .proto import Snapshot as SnapshotMsg
+from .proto import Snapshot
 from .image import image
 
 def make_minimal_snapshot_msg(snap,supported_fields):
@@ -16,47 +18,60 @@ def make_minimal_snapshot_msg(snap,supported_fields):
     emo = snap.feelings
 
     trans = {'x':trans.x,'y':trans.y,'z':trans.z} 
-    if('translation' not in supported_fields):
-        trans = {'x':0,'y':0,'z':0} 
-
     rot = {'x':rot.x,'y':rot.y,'z':rot.z,'w':rot.w} 
-    if('rotation' not in supported_fields):
+    if('pose' not in supported_fields):
+        trans = {'x':0,'y':0,'z':0} 
         rot = {'x':0,'y':0,'z':0,'w':0} 
 
+    col_img = image('Color',col_img.height,col_img.width,col_img.data)
     if('color_image' not in supported_fields):
         col_img = image('Color',0,0,b'')
 
+    dep_img = image('depth',dep_img.height,dep_img.width,dep_img.data)
     if('depth_image' not in supported_fields):
         dep_img = image('Depth',0,0,b'')
 
     if('emotions' not in supported_fields):
         emo = (0,0,0,0)
 
-    return SnapshotMsg(time,trans,rot,col_img,dep_img,emo)
+    return Snapshot(time,trans,rot,col_img,dep_img,emo)
 
 
 def upload_thoughts(address,port, sample_file):
+    base_url = f'http://{address}:{port}'
     print(' @@@ Debug before reader start ')
     reader_class = get_reader(2)
     s_reader = reader_class(sample_file)
-    print(' @@@ Debug making hello')
-    hello_msg = Hello(s_reader.uid,s_reader.uname,s_reader.bday,s_reader.gender)
-    print(' @@@ Debug done making hello')
-    snap = s_reader.read_snapshot()
-    while snap != None:
-        with Connection.connect(address,port) as con:
-            print(' @@@ Debug sending message using connection class')
-            con.send_message(hello_msg.serialize())
-            print(' @@@ Debug sent')
-            data = con.receive_message()
-            conf = Config.deserialize(data)
-            print(conf)
-            print(' @@@ Debug got a snap')
-            snap_msg = make_minimal_snapshot_msg(snap,conf.supported_fields)
-            print(f' @@@ Debug minimalized snap: {snap_msg}')
-            con.send_message(snap_msg.serialize())
-            print(' @@@ Debug snap sent!')
-            pass
+    with requests.Session() as s:
+        print(' @@@ Debug making hello')
+        hello_msg = {'uid':s_reader.uid,
+                    'username':s_reader.uname,
+                    'birthday':s_reader.bday,
+                    'gender':s_reader.gender}
+        print(f'cookies: {s.cookies.get_dict()}')
+        hello_response = s.post(f'{base_url}/hello',json=hello_msg)
+        print(hello_response)
+        print(f'cookies: {s.cookies.get_dict()}')
+        for x in requests.session().cookies:
+            print(f'a cookie!: {x}')
+        conf_response = s.get(f'{base_url}/config')
+        supported_fields = json.loads(conf_response.content)
+        print(conf_response)
+        print(conf_response.content)
+        print(supported_fields)
+        # Start reading snapshots
         snap = s_reader.read_snapshot()
-        time.sleep(5.5)
+        while snap != None:
+            print(' @@@ Debug got a snap')
+            snap_msg = make_minimal_snapshot_msg(snap,supported_fields)
+            snapshot_dict = snap_msg.toDict()
+            snapshot_bson = bson.dumps(snapshot_dict)
+            print(f'bson\'d!')
+            headers = {'Content-type': 'application/bson'}
+            snap_response = s.post(f'{base_url}/snapshot',
+                                    data=snapshot_bson,
+                                    headers=headers)
+            print(f' @@@ Debug snap sent! Response: {snap_response}')
+            snap = s_reader.read_snapshot()
+            time.sleep(5.5)
     print('done')

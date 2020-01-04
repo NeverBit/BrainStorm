@@ -1,7 +1,7 @@
 import datetime as dt
 import struct
 from .image import image
-from .snapshot import Snapshot
+from .proto import Snapshot
 from .cortex_pb2 import User as UserPb
 from .cortex_pb2 import Snapshot as SnapshotPb
 
