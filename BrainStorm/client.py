@@ -5,9 +5,9 @@ import socket
 import struct
 import time
 from .connection import Connection
+from .image import image
 from .mindreader import get_reader
 from .proto import Snapshot
-from .image import image
 
 def make_minimal_snapshot_msg(snap,supported_fields):
     time = snap.datetime
