@@ -1,12 +1,12 @@
 import base64
 import bson
+import flask
 import json
 from pathlib import Path
 import socket
 import struct
 import time
 import threading
-import flask
 from .connection import Connection
 from .proto import Snapshot
 from . import parsers
@@ -15,8 +15,10 @@ from . import proto
 
 app = flask.Flask(__name__)
 
+
 data_dir = None
 files_lock = threading.Lock()
+
 
 parsers_list = parsers.registered_parsers
 parsers_names = list(parsers_list.keys())
