@@ -1,0 +1,49 @@
+body {
+    font-family: sans-serif;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+         -o-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+@font-face {
+  font-family: Biko;
+  src:url("biko-black.woff");
+}
+
+svg { 
+  width: 100%;
+  position:absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  text-align: center;
+}
+svg text {
+  font-family: Biko, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 42px;
+  text-align: center;
+  position: relative;
+}
+svg #maskRect {
+  fill: white;
+}
+svg > rect {
+    -webkit-mask: url(#mask);
+    mask: url(#mask);
+}
+#outter {
+  fill: #101010;
+}

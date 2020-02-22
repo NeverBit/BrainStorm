@@ -1,0 +1,51 @@
+<!-- Filename : index.html -->
+<!DOCTYPE html>
+<html lang = "en-US" dir = "ltr">
+  <head>
+    <title>Center an Iframe</title> 
+    <style>
+	#header {
+		position:relative;
+	}
+	#header > iframe {
+		display:block;
+		width: 810px;
+		height: 130px;
+		margin: 0 auto;
+		margin-top: 30px;
+	} 
+	#header > #iframeOverlay {
+		position:absolute;
+		top:0;
+		left:0;
+		display:inline-block;
+		width: 810px;
+		height: 130px;
+		z-index:5;
+	} 
+	body {
+		background-color: #101010;
+		color: #999999;
+		display:block;
+		width: 810px;
+		height: 280px;
+		margin: 0 auto;
+		font-family: Arial,Helvetica Neue,Helvetica,sans-serif; 
+	} 
+    </style> 
+  </head>
+  <body>
+	<div id="header">
+		<iframe src="logo.html" frameBorder="0" ></iframe>
+		<a id="iframeOverlay" href="main.html" title="Home"></a>
+	</div>
+	<p>
+	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+	</p>
+	<lu>
+		<li>Item 1</li>
+		<li>Item 2</li>
+		<li>Item 3</li>
+	<lu>
+  </body>
+</html> 
