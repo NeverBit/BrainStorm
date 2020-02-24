@@ -1,4 +1,5 @@
 import bson
+import click
 import json
 import requests
 import socket
@@ -36,7 +37,14 @@ def make_minimal_snapshot_msg(snap,supported_fields):
 
     return Snapshot(time,trans,rot,col_img,dep_img,emo)
 
+@click.group()
+def main():
+    pass
 
+@main.command(name='upload_sample')
+@click.argument('host',type=str)
+@click.argument('port',type=int)
+@click.argument('path',type=str)
 def upload_sample(host, port, path):
     base_url = f'http://{host}:{port}'
     print(' @@@ Debug before reader start ')
@@ -75,3 +83,13 @@ def upload_sample(host, port, path):
             snap = s_reader.read_snapshot()
             time.sleep(5.5)
     print('done')
+
+
+
+
+if __name__ == '__main__':
+    try:
+        main(prog_name='BrainStorm.Client', obj={})
+    except Exception as error:
+        print(f'ERROR: {error}')
+        sys.exit(1)
