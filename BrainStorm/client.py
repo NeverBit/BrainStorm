@@ -42,9 +42,9 @@ def main():
     pass
 
 @main.command(name='upload-sample')
-@click.option('-h','--host',type=str,default='127.0.0.1')
-@click.option('-p','--port',type=str,default=8000)
-@click.argument('path',type=str)
+@click.option('-h', '--host', type=str, default='127.0.0.1')
+@click.option('-p', '--port', type=str, default=8000)
+@click.argument('path', type=click.File('rb'))
 def upload_sample(host, port, path):
     base_url = f'http://{host}:{port}'
     print(' @@@ Debug before reader start ')
