@@ -3,8 +3,8 @@ python:
   - "3.8"
 # command to install dependencies
 install:
-  - pip install -r requirements.txt
-  - pip install codecov
+  - ./scripts/install.sh
+  - source .env/bin/activate
 
 # command to run tests
 script:
