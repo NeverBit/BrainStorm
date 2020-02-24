@@ -2,7 +2,6 @@ import sys
 import client
 from .utils import Connection,Listener
 from .server import run_server
-from .client import upload_sample
 from .web import run_webserver
 import click
 
@@ -12,20 +11,6 @@ def main():
 
 @main.group('server')
 def server():
-    pass
-
-@main.group('client')
-def client():
-    pass
-
-@client.command(name='run')
-@click.argument('sample_path',type=str)
-@click.argument('ip',type=str)
-@click.argument('port',type=int)
-def upload_thought_command(sample_path,ip,port):
-    print(' @@@ Debug inside main handler')
-    with open(sample_path,'rb') as fd:
-        upload_sample(ip,port,fd)
     pass
 
 @server.command(name='run')
