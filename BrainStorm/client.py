@@ -41,9 +41,9 @@ def make_minimal_snapshot_msg(snap,supported_fields):
 def main():
     pass
 
-@main.command(name='upload_sample')
-@click.argument('host',type=str)
-@click.argument('port',type=int)
+@main.command(name='upload-sample')
+@click.option('-h','--host',type=str,default='127.0.0.1')
+@click.option('-p','--port',type=str,default=8000)
 @click.argument('path',type=str)
 def upload_sample(host, port, path):
     base_url = f'http://{host}:{port}'
