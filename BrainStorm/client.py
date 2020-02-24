@@ -37,11 +37,11 @@ def make_minimal_snapshot_msg(snap,supported_fields):
     return Snapshot(time,trans,rot,col_img,dep_img,emo)
 
 
-def upload_thoughts(address,port, sample_file):
-    base_url = f'http://{address}:{port}'
+def upload_sample(host, port, path):
+    base_url = f'http://{host}:{port}'
     print(' @@@ Debug before reader start ')
     reader_class = get_reader(2)
-    s_reader = reader_class(sample_file)
+    s_reader = reader_class(path)
     with requests.Session() as s:
         print(' @@@ Debug making hello')
         hello_msg = {'uid':s_reader.uid,

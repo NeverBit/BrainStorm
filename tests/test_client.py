@@ -10,7 +10,7 @@ import time
 
 import pytest
 
-from BrainStorm import upload_thoughts
+from BrainStorm import upload_sample
 from BrainStorm import proto
 
 _SERVER_ADDRESS = '127.0.0.1',5000
@@ -52,19 +52,19 @@ def get_mind_sample():
     return io.BytesIO(_DISABLED_test_HEADER_1 + snapshot)
 
 def DISABLED_test_connection(get_message,get_mind_sample):
-    upload_thoughts(*_SERVER_ADDRESS, get_mind_sample)
+    upload_sample(*_SERVER_ADDRESS, get_mind_sample)
     message = get_message()
     assert message
 
 
 def DISABLED_test_hello_msg_recvd(get_message,get_mind_sample):
-    upload_thoughts(*_SERVER_ADDRESS, get_mind_sample)
+    upload_sample(*_SERVER_ADDRESS, get_mind_sample)
     message = get_message()
     h = proto.Hello.deserialize(message)
     assert h
 
 def DISABLED_test_name_recvd(get_message,get_mind_sample):
-    upload_thoughts(*_SERVER_ADDRESS, get_mind_sample)
+    upload_sample(*_SERVER_ADDRESS, get_mind_sample)
     message = get_message()
     h = proto.Hello.deserialize(message)
     assert h.uname == _H1_NAME
