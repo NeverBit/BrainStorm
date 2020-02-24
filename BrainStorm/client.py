@@ -41,11 +41,15 @@ def make_minimal_snapshot_msg(snap,supported_fields):
 def main():
     pass
 
+def upload_sample(host, port, path):
+    with open(path,'rb') as file:
+        upload_sample_file(host,port,file)
+
 @main.command(name='upload-sample')
 @click.option('-h', '--host', type=str, default='127.0.0.1')
 @click.option('-p', '--port', type=str, default=8000)
-@click.argument('path', type=click.File('rb'))
-def upload_sample(host, port, path):
+@click.argument('file', type=click.File('rb'))
+def upload_sample_file(host, port, file):
     base_url = f'http://{host}:{port}'
     print(' @@@ Debug before reader start ')
     reader_class = get_reader(2)
