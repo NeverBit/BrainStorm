@@ -10,7 +10,7 @@ import time
 
 import pytest
 
-from BrainStorm import upload_sample
+from BrainStorm.client import upload_sample
 from BrainStorm import proto
 
 _SERVER_ADDRESS = '127.0.0.1',5000
