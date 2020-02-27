@@ -41,20 +41,6 @@ def test_image_write(tmp_path):
     assert expected_file.exists()
     assert expected_file.is_file()
 
-
-def test_translation_write(tmp_path):
-    my_dir = tmp_path / 'my_dir'
-    my_dir.mkdir()
-    translation = {'x':1.1,'y':2.2,'z':3.3}
-    rot = {'x':1.1,'y':2.2,'z':3.3,'w':4.4}
-    snap = Snapshot(0,translation,rot,None,None,None)
-    con = parser_context(my_dir)
-    parsers.registered_parsers['pose'](con,snap)
-    expected_file = my_dir / 'pose.json'
-    assert expected_file.exists()
-    assert expected_file.is_file()
-
-
 def test_translation_content(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
@@ -62,9 +48,8 @@ def test_translation_content(tmp_path):
     rot = {'x':1.1,'y':2.2,'z':3.3,'w':4.4}
     snap = Snapshot(0,translation,None,None,None,None)
     con = parser_context(my_dir)
-    parsers.registered_parsers['pose'](con,snap)
-    expected_file = my_dir / 'pose.json'
-    j = json.load(open(expected_file))
+    res = parsers.registered_parsers['pose'](con,snap)
+    j = res
     assert 'translation' in j
     retr_trans = j['translation']
     assert 'x' in retr_trans
