@@ -1,9 +1,11 @@
 import bson
 import click
+import gzip
 import json
 import requests
 import socket
 import struct
+import sys
 import time
 from .connection import Connection
 from .image import image
@@ -11,6 +13,10 @@ from .mindreader import get_reader
 from .proto import Snapshot
 
 def make_minimal_snapshot_msg(snap,supported_fields):
+    '''
+    Makes a subset version of a snapshot - containing
+    values only for the fields supported by the server
+    '''
     time = snap.datetime
     trans = snap.pose.translation
     rot = snap.pose.rotation
@@ -37,13 +43,17 @@ def make_minimal_snapshot_msg(snap,supported_fields):
 
     return Snapshot(time,trans,rot,col_img,dep_img,emo)
 
-@click.group()
-def main():
-    pass
 
 def upload_sample(host, port, path):
     with open(path,'rb') as file:
         upload_sample_file(host,port,file)
+
+
+
+
+@click.group()
+def main():
+    pass
 
 @main.command(name='upload-sample')
 @click.option('-h', '--host', type=str, default='127.0.0.1')
@@ -52,14 +62,18 @@ def upload_sample(host, port, path):
 def upload_sample_file(host, port, file):
     base_url = f'http://{host}:{port}'
     print(' @@@ Debug before reader start ')
-    reader_class = get_reader(2)
-    s_reader = reader_class(path)
+    reader_class = get_reader(versionNum=2)
+    if(file.name.endswith('gz')):
+        file.seek(0)
+        file = gzip.GzipFile(fileobj=file)
+    s_reader = reader_class(file)
     with requests.Session() as s:
         print(' @@@ Debug making hello')
         hello_msg = {'uid':s_reader.uid,
                     'username':s_reader.uname,
                     'birthday':s_reader.bday,
                     'gender':s_reader.gender}
+        print(f'Hello Msg: {hello_msg}')
         print(f'cookies: {s.cookies.get_dict()}')
         hello_response = s.post(f'{base_url}/hello',json=hello_msg)
         print(hello_response)
@@ -89,11 +103,9 @@ def upload_sample_file(host, port, file):
     print('done')
 
 
-
-
 if __name__ == '__main__':
     try:
-        main(prog_name='BrainStorm.Client', obj={})
+        main(prog_name='BrainStorm.client', obj={})
     except Exception as error:
         print(f'ERROR: {error}')
         sys.exit(1)
