@@ -19,14 +19,8 @@ from . import proto
 
 
 app = flask.Flask(__name__)
-
-
-parsers_list = parsers.registered_parsers
-parsers_names = list(parsers_list.keys())
-BRAINSTORM_COOKIE = 'bs-user'
-
-
 serverInst = None
+BRAINSTORM_COOKIE = 'bs-user'
 
 
 class SnapshotsServer:
@@ -49,6 +43,7 @@ class SnapshotsServer:
 
 
     def server_config(self):
+        parsers_names = list(parsers.registered_parsers.keys())
         return flask.jsonify(parsers_names)
 
 
@@ -141,6 +136,7 @@ def run_server_mq(host,port,connection_string):
         publish = debug_publish
     else:
         mq_con = mq.create_mq_connection(connection_string,'input')
+        mq_con.open()
         publish = mq_con.publish
     run_server(host,port,publish)
 

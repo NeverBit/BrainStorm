@@ -59,6 +59,7 @@ def run_parser_service(name,connection_string):
 
     # Create MQ connection towards saver
     con_to_saver = mq.create_mq_connection(connection_string, 'save')
+    con_to_saver.open()
 
     # Define parse & publish callback
     def callback(channel, method, properties, body):
@@ -70,6 +71,7 @@ def run_parser_service(name,connection_string):
 
     # Consume input mq
     con_to_input = mq.create_mq_connection(connection_string, 'input')
+    con_to_input.open()
     con_to_input.start_consume(callback)
 
 

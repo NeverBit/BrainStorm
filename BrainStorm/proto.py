@@ -7,6 +7,7 @@ from . import image as im
 
 Pose = namedtuple('Pose' ,('translation','rotation'))
 
+
 class Snapshot:
     '''
     Represents a complete snapshot, including the binary parts (images)
