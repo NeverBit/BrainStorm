@@ -115,9 +115,8 @@ def server_config():
 def client_snapshot():
     return serverInst.client_snapshot()
 
-def run_server(host,port,publish):
+def run_server(host, port, publish, data_dir = 'data'):
     global serverInst
-    data_dir = "data" # TODO: rethink
     serverInst = SnapshotsServer(data_dir,publish)
     print(f' @@@ Debug run-server and serverInst is {serverInst}')
 

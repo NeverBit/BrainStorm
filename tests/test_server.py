@@ -12,11 +12,13 @@ import time
 
 import pytest
 
-from BrainStorm import run_server
+from BrainStorm.server import run_server
 
 
 _SERVER_ADDRESS = '127.0.0.1:5000'
 _SERVER_ADDRESS_TUP = '127.0.0.1', 5000
+_SERVER_HOST = '127.0.0.1:5000'
+_SERVER_PORT = 5000
 _SERVER_PATH = pathlib.Path(__file__).absolute().parent.parent / 'server.py'
 
 _HEADER_FORMAT = 'LLI'
@@ -99,7 +101,7 @@ def DISABLED_test_race_condition(data_dir):
 
 def _run_server(pipe, data_dir):
     pipe.send('read')
-    run_server(_SERVER_ADDRESS, data_dir)
+    run_server(_SERVER_HOST, _SERVER_PORT, print, data_dir=data_dir)
 
 
 def _upload_thought(user_id, timestamp, thought):

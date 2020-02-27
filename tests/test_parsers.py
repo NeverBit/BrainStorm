@@ -3,7 +3,7 @@ import math
 import os
 from BrainStorm import image as im
 from BrainStorm import parsers
-from BrainStorm import Snapshot
+from BrainStorm.proto import Snapshot
 
 
 class parser_context:
