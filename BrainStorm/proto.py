@@ -79,4 +79,4 @@ class SnapshotSlim:
         col_img_path = d["color_image_path"]
         dep_img_path = d["depth_image_path"]
         emo = d["emotions"]
-        return cls(ts,uid,trans,rot,col_img_path,dep_img_path,emo)
+        return cls(uid,ts,trans,rot,col_img_path,dep_img_path,emo)
