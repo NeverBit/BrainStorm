@@ -1,0 +1,27 @@
+Client - Server protocol:
+
+Consists of 3 URLs, each allows a specific request and returns 1 non-erroric response
+
+All request are initiatede by the client, all responses are sent by the server.
+
+URL: /hello
+Client Request Type: POST
+Client content: Identification JSON
+Server response: 200 OK + Cookie or 500 internal error
+
+
+URL: /config
+Client Request Type: GET
+Client content: NONE
+Client cookie: As recieved from /hello
+Server response: 200 OK or 500 internal error
+Server Content: Parsers list JSON
+
+
+
+URL: /snapshot
+Client Request Type: POST
+Client content: Snapshot BSON
+Client cookie: As recieved from /hello
+Server response: 200 OK or 400 if cookie is missing or 500 internal error
+
