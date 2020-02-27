@@ -47,7 +47,8 @@ class SnapshotSlim:
     '''
     Represents a partial snapshot, excluding the binary parts (images)
     '''
-    def __init__(self,timestamp,translation,rotation,col_img_path,dep_img_path,feelings):
+    def __init__(self,uid,timestamp,translation,rotation,col_img_path,dep_img_path,feelings):
+        self.uid = uid
         self.timestamp = timestamp
         self.pose = Pose(translation, rotation)
         self.col_img_path = col_img_path
@@ -55,6 +56,7 @@ class SnapshotSlim:
         self.feelings = feelings
     def toDict(self):
             return {
+                    "uid":self.uid,
                     "timestamp":self.timestamp,
                     "pose":{
                             "translation":self.pose.translation,
@@ -65,15 +67,16 @@ class SnapshotSlim:
                     "emotions":self.feelings
                     }
     def __repr__(self):
-        return (f'<Snapshot; Time: {self.timestamp}, Trans: {self.pose.translation}, '
+        return (f'<Snapshot; Uid: {self.uid}, Time: {self.timestamp}, Trans: {self.pose.translation}, '
                 f'Rot: {self.pose.rotation}, Col Img Path: {self.col_img_path}, '
                 f'Dep Img Path: {self.dep_img_path}, Feels: {self.feelings}')
     @classmethod
     def fromDict(cls,d):
+        uid = d["uid"]
         ts = d["timestamp"]
         trans = d["pose"]["translation"]
         rot = d["pose"]["rotation"]
         col_img_path = d["color_image_path"]
         dep_img_path = d["depth_image_path"]
         emo = d["emotions"]
-        return cls(ts,trans,rot,col_img_path,dep_img_path,emo)
+        return cls(ts,uid,trans,rot,col_img_path,dep_img_path,emo)

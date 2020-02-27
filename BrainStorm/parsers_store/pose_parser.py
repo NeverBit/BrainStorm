@@ -9,5 +9,5 @@ def parse_pose(context,snapshot):
                 }
     j = json.dumps(pose_dict)
     print(f'Found POSE: {j}')
-    context.save('pose.json',j)
+    return j
 parse_pose.field = "pose"

@@ -3,14 +3,14 @@ import importlib
 import json
 from . import mq
 from . import parsers_store
-import pathlib
+from pathlib import Path
 import pika
 from .proto import Snapshot
 from .proto import SnapshotSlim
 import sys
 
 
-parsers_list = parsers_store.registered_parsers
+registered_parsers = parsers_store.registered_parsers
 
 
 # TODO: Move elsewhere
@@ -37,13 +37,14 @@ def main():
 def run_parser_once(name,input):
     print(' @@@ Debug in run_parser_once')
     # Resolve parser name to function
-    parse_func = parsers_list[name]
+    parse_func = registered_parsers[name]
 
     # Parse input snapshot
+    print(' @@@ Debug fromDict')
     snapshot = SnapshotSlim.fromDict(json.loads(input.read()))
     print(' @@@ Debug in parsing')
-    context = parser_context('resources')
-    res = parse_func(snapshot)
+    context = parser_context(Path('resources'))
+    res = parse_func(context,snapshot)
     print(' @@@ Debug in done parsing')
     json_snap = json.dumps(res)
     print(json_snap)
@@ -54,7 +55,7 @@ def run_parser_once(name,input):
 @click.argument('connection_string', type=str)
 def run_parser_service(name,connection_string):
     # Resolve parser name to function
-    parse_func = parsers_list[name]
+    parse_func = registered_parsers[name]
 
     # Create MQ connection towards saver
     con_to_saver = mq.create_mq_connection(connection_string, 'save')
@@ -62,7 +63,8 @@ def run_parser_service(name,connection_string):
     # Define parse & publish callback
     def callback(channel, method, properties, body):
         snapshot = SnapshotSlim.fromDict(json.loads(body))
-        res = parse_func(snapshot)
+        context = parser_context('resources')
+        res = parse_func(context,snapshot)
         json_snap = json.dumps(res)
         con_to_saver.publish(json_snap)
 
@@ -75,5 +77,6 @@ if __name__ == '__main__':
     try:
         main(prog_name='BrainStorm.parsers', obj={})
     except Exception as error:
+        print(error)
         print(f'ERROR: {error}')
         sys.exit(1)

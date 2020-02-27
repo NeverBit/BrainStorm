@@ -87,7 +87,8 @@ class SnapshotsServer:
         print('It\'s OK')
 
         # Make Slim snapshot (with the images paths)
-        slimshot = SnapshotSlim(timestamp,
+        slimshot = SnapshotSlim(uid,
+                                timestamp,
                                 snapshot.pose.translation,
                                 snapshot.pose.rotation,
                                 str(col_img_path),
