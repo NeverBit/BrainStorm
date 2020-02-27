@@ -49,7 +49,7 @@ def test_translation_content(tmp_path):
     snap = Snapshot(0,translation,None,None,None,None)
     con = parser_context(my_dir)
     res = parsers.registered_parsers['pose'](con,snap)
-    j = res
+    j = json.loads(res)
     assert 'translation' in j
     retr_trans = j['translation']
     assert 'x' in retr_trans
