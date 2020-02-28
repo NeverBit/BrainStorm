@@ -16,12 +16,13 @@ def make_minimal_snapshot_msg(snap,supported_fields):
     Makes a subset version of a snapshot - containing
     values only for the fields supported by the server
     '''
-    time = snap.datetime
+    uid = snap.uid
+    dtime = snap.datetime
     trans = snap.pose.translation
     rot = snap.pose.rotation
-    col_img = snap.color_image
-    dep_img = snap.depth_image
-    emo = snap.feelings
+    col_img = snap.col_img
+    dep_img = snap.dep_img
+    feel = snap.feelings
 
     trans = {'x':trans.x,'y':trans.y,'z':trans.z} 
     rot = {'x':rot.x,'y':rot.y,'z':rot.z,'w':rot.w} 
@@ -29,18 +30,16 @@ def make_minimal_snapshot_msg(snap,supported_fields):
         trans = {'x':0,'y':0,'z':0} 
         rot = {'x':0,'y':0,'z':0,'w':0} 
 
-    col_img = image('Color',col_img.height,col_img.width,col_img.data)
     if('color_image' not in supported_fields):
-        col_img = image('Color',0,0,b'')
+        col_img = image(0,0,b'')
 
-    dep_img = image('depth',dep_img.height,dep_img.width,dep_img.data)
     if('depth_image' not in supported_fields):
-        dep_img = image('Depth',0,0,b'')
+        dep_img = image(0,0,b'')
 
-    if('emotions' not in supported_fields):
-        emo = (0,0,0,0)
+    if('feelings' not in supported_fields):
+        feel = (0,0,0,0)
 
-    return Snapshot(time,trans,rot,col_img,dep_img,emo)
+    return Snapshot(uid,dtime,trans,rot,col_img,dep_img,feel)
 
 
 @click.group()

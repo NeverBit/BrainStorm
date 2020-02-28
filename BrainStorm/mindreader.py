@@ -47,15 +47,16 @@ class reader_v1:
                 bgr_trio = self.file.read(3)
                 yield bgr_trio[::-1]
         img_rgb = b''.join(bgr_reader())
-        color_img = image('Color',col_h,col_w,img_rgb)
+        color_img = image(col_h,col_w,img_rgb)
         # Depth Image
         dep_h,dep_w = struct.unpack('II',self.file.read(8))
         img_dep = self.file.read(dep_h * dep_w * 4)
-        dep_img = image('Depth',dep_h,dep_w,img_dep)
+        dep_img = image(dep_h,dep_w,img_dep)
         # Emotions
         hunger, thirst, exha, happy = struct.unpack('ffff',self.file.read(16))
         emotions = (hunger,thirst,exha,happy)
-        return SnapshotBinary(time, translation, rotation,color_img,dep_img,emotions)
+        print(' @@@ DEBUG adding UID to snapshot v1 in ctor')
+        return Snapshot(self.uid,time, translation, rotation,color_img,dep_img,emotions)
 
 
 @reader(2)
@@ -102,4 +103,16 @@ class reader_v2:
             return None
         snap = SnapshotPb()
         snap.ParseFromString(self.file.read(snapLen))
-        return snap
+        print(f' @@@ DEBUG snapPB : {snap}'[:400])
+        print(f' @@@ DEBUG snapPB : {snap.color_image}'[:300])
+
+        col_img = snap.color_image
+        col_img = image(col_img.height,col_img.width,col_img.data)
+        dep_img = snap.depth_image
+        dep_img = image(dep_img.height,dep_img.width,dep_img.data)
+    
+        return Snapshot(self.uid, snap.datetime,
+                        snap.pose.translation, snap.pose.rotation,
+                        col_img, dep_img,
+                        snap.feelings)
+

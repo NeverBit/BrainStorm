@@ -2,6 +2,7 @@ bson==0.5.9
 Click==7.0
 codecov==2.0.15
 Flask==1.1.1
+furl==2.1.0
 grpcio-tools==1.26.0
 Pillow==6.2.1
 pika==1.1.0

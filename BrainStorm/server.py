@@ -64,26 +64,26 @@ class SnapshotsServer:
         snapshot_bson = flask.request.data
         snapshot_dict = bson.loads(snapshot_bson)
         snapshot = Snapshot.fromDict(snapshot_dict)
-        timestamp = snapshot.timestamp
-        print(f'user info  {user_info} sent snapshot : {timestamp}')
+        datetime = snapshot.datetime
+        print(f'user info  {user_info} sent snapshot : {datetime}')
 
         # Make user & time directories
         dd_path = Path(self.data_dir)
         dd_path.mkdir(exist_ok=True)
         user_path = dd_path / f'{uid}'
         user_path.mkdir(exist_ok=True)
-        datetime_path = user_path / f'{timestamp}'
+        datetime_path = user_path / f'{datetime}'
         datetime_path.mkdir(exist_ok=True)
         # Save images to filesystem
         col_img_path = datetime_path / f'color_image.bin'
         self.save_image(col_img_path,snapshot.col_img)
         dep_img_path = datetime_path / f'depth_image.bin' 
         self.save_image(dep_img_path,snapshot.dep_img)
-        print('It\'s OK')
+        print(f' @@@ DEBUG Saved images to {datetime_path}')
 
         # Make Slim snapshot (with the images paths)
         slimshot = SnapshotSlim(uid,
-                                timestamp,
+                                datetime,
                                 snapshot.pose.translation,
                                 snapshot.pose.rotation,
                                 str(col_img_path),

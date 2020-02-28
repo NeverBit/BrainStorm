@@ -19,11 +19,6 @@ def test_create_invalid_rabbit_no_numer_port():
         con = create_mq_connection("rabbitmq://127.0.0.1:abcd/",_TOPIC)
 
 
-def test_create_invalid_rabbit_bad_addr():
-    with pytest.raises(ValueError):
-        con = create_mq_connection("rabbitmq://1.2.3:8080/",_TOPIC)
-
-
 def test_create_invalid_scheme():
     with pytest.raises(ValueError):
         con = create_mq_connection("bad://127.0.0.1:8080/",_TOPIC)

@@ -1,4 +1,6 @@
+import bson
 import click
+from .image import image
 import importlib
 import json
 from . import mq
@@ -13,17 +15,14 @@ import sys
 registered_parsers = parsers_store.registered_parsers
 
 
-# TODO: Move elsewhere
 class parser_context:
-    def __init__(self,save_dir):
-        self.dir = save_dir
+    def __init__(self, storage_dir):
+        self.dir = storage_dir
     def get_storage_path(self):
         return self.dir
-    def save(self,filename,data):
-        filepath = self.dir / filename
-        with filepath.open('w') as f:
-            f.write(data)
-        print(f' @@@ DEBUG Saved {len(data)} bytes to {filepath}')
+    def get_image(self,path):
+        with open(path, 'rb') as f:
+            return image.fromDict(bson.loads(f.read()))
 
 
 @click.group()
@@ -42,8 +41,11 @@ def run_parser_once(name,input):
     # Parse input snapshot
     print(' @@@ Debug fromDict')
     snapshot = SnapshotSlim.fromDict(json.loads(input.read()))
-    print(' @@@ Debug in parsing')
-    context = parser_context(Path('resources'))
+    # Make parser context
+    res_path = Path('resources')
+    res_path.mkdir(exist_ok=True)
+    context = parser_context(res_path)
+    print(' @@@ Debug parser context made')
     res = parse_func(context,snapshot)
     print(' @@@ Debug in done parsing')
     json_snap = json.dumps(res)
@@ -82,3 +84,4 @@ if __name__ == '__main__':
         print(error)
         print(f'ERROR: {error}')
         sys.exit(1)
+ 
