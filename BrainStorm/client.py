@@ -7,7 +7,6 @@ import socket
 import struct
 import sys
 import time
-from .connection import Connection
 from .image import image
 from .mindreader import get_reader
 from .proto import Snapshot
@@ -42,13 +41,6 @@ def make_minimal_snapshot_msg(snap,supported_fields):
         emo = (0,0,0,0)
 
     return Snapshot(time,trans,rot,col_img,dep_img,emo)
-
-
-def upload_sample(host, port, path):
-    with open(path,'rb') as file:
-        upload_sample_file(host,port,file)
-
-
 
 
 @click.group()
@@ -101,6 +93,12 @@ def upload_sample_file(host, port, file):
             snap = s_reader.read_snapshot()
             time.sleep(5.5)
     print('done')
+
+
+def upload_sample(host, port, path):
+    with open(path,'rb') as file:
+        upload_sample_file(host,port,file)
+
 
 
 if __name__ == '__main__':

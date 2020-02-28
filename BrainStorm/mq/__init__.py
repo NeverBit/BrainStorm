@@ -2,7 +2,7 @@ import re
 from .rabbitmq_conn import rabbitmq_conn
 
 # TODO: furl
-rmq_parser_regex = re.compile('rabbitmq://(\d+\.\d+\.\d+\.\d+):(\d+)/')
+rmq_parser_regex = re.compile(r'rabbitmq://(\d+\.\d+\.\d+\.\d+):(\d+)/')
 
 def create_mq_connection(connection_string,topic):
     print(' @@@ DEBUG parsing '+connection_string)
