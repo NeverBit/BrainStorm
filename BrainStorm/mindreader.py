@@ -62,8 +62,21 @@ class reader_v1:
 class reader_v2:
     def __init__(self,mindStream):
         self.file = mindStream
+        self.offset = 0
+        # get stream size
+        self.file.seek(0,2)
+        self.size = self.file.tell()
+        self.file.seek(0,0)
+
+
         # Reading header
+        if(self.offset + 4 > self.size):
+            return
         userLen, = struct.unpack('I',self.file.read(4))
+        self.offset += 4
+        if(self.offset + userLen > self.size):
+            return None
+        self.offset += userLen
         print(f'user len: {userLen}')
         user = UserPb()
         user.ParseFromString(self.file.read(userLen))
@@ -79,8 +92,14 @@ class reader_v2:
             self.gender = 'o'
         
     def read_snapshot(self):
+        if(self.offset + 4 > self.size):
+            return None
         snapLen, = struct.unpack('I',self.file.read(4))
+        self.offset += 4
         print(f'snap len: {snapLen}')
+        print(f'snap self.offset + snapLen: {self.offset + snapLen} >< size: {self.size}')
+        if(self.offset + snapLen > self.size):
+            return None
         snap = SnapshotPb()
         snap.ParseFromString(self.file.read(snapLen))
         return snap
