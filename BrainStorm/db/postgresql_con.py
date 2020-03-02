@@ -7,7 +7,7 @@ class rabbitmq_conn:
         self.exchange = exchange
 
     def open(self):
-        # Create connection to MQ
+        # Create connection to DB
         params = pika.ConnectionParameters(self.host, self.port)
         connection = pika.BlockingConnection(params)
         self.channel = connection.channel()
@@ -31,7 +31,7 @@ class rabbitmq_conn:
         if not topics:
             topics = ('#')
         for binding_key in topics:
-            self.channel.queue_bind(exchange=self.exchange,
+            self.channel.queue_bind(exchange=self.topic,
                                     queue=queue_name, 
                                     routing_key=binding_key)
 

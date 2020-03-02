@@ -30,7 +30,7 @@ def test_col_img_parser_registered():
 def test_image_write(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
-    img = im.image('Color',2,2,(b'\xff\x00\x00'
+    img = im.image(2,2,(b'\xff\x00\x00'
                                 b'\x00\xff\x00'
                                 b'\x20\x20\x00'
                                 b'\x80\x80\xff'))

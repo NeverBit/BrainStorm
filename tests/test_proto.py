@@ -4,8 +4,8 @@ from BrainStorm import image as im
 
 
 def test_snapshot_ser_des():
-    col_img = im.image('Color',2,2,b'\xff\x00\x00'*4)
-    dep_img = im.image('Depth',1,1,struct.pack('!f',0.75))
+    col_img = im.image(2,2,b'\xff\x00\x00'*4)
+    dep_img = im.image(1,1,struct.pack('!f',0.75))
     trans = {'x':1.1,'y':2.2,'z':3.3}
     rot = {'x':1.1,'y':2.2,'z':3.3,'w':4.4}
     feel = (1.0,0.0,-1.0,1.0)
@@ -14,8 +14,8 @@ def test_snapshot_ser_des():
     assert repr(s1) == repr(s2)
 
 def test_snapshot_ser_des_with_nones():
-    col_img = im.image('Color',2,2,b'\xff\x00\x00'*4)
-    dep_img = im.image('Depth',1,1,struct.pack('!f',0.75))
+    col_img = im.image(2,2,b'\xff\x00\x00'*4)
+    dep_img = im.image(1,1,struct.pack('!f',0.75))
     trans = None
     rot = None
     feel = None

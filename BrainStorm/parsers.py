@@ -68,8 +68,11 @@ def run_parser_service(name,connection_string):
     parse_func = registered_parsers[name]
 
     # Create MQ connection towards saver
+    print(f' @@@ Debug Creating MQ connection PARSERS')
     con_to_saver = mq.create_mq_connection(connection_string, 'parsers')
+    print(f' @@@ Debug Opening MQ connection')
     con_to_saver.open()
+    print(f' @@@ Debug Opened MQ connection')
 
     # Define parse & publish callback
     def callback(channel, method, properties, body):
@@ -87,9 +90,13 @@ def run_parser_service(name,connection_string):
         con_to_saver.publish(saver_msg_json, topic=name)
 
     # Consume input mq
+    print(f' @@@ Debug Creating MQ connection input')
     con_to_input = mq.create_mq_connection(connection_string, 'input')
+    print(' @@@ Debug Opening MQ connection')
     con_to_input.open()
+    print(' @@@ Debug Opened MQ connection')
     con_to_input.start_consume(callback)
+    print(' @@@ Debug start_consume MQ connection')
 
 
 if __name__ == '__main__':
