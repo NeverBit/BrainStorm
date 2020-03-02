@@ -40,6 +40,10 @@ def test_col_img_parser_registered():
     assert 'color_image' in parsers.registered_parsers
 
 
+def test_dep_img_parser_registered():
+    assert 'depth_image' in parsers.registered_parsers
+
+
 def test__color_image__write(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
@@ -53,6 +57,22 @@ def test__color_image__write(tmp_path):
     con = parser_context(my_dir)
     con.set_encoded_image_to_return(img)
     parser = parsers.registered_parsers['color_image']
+    res = parser(con,snap)
+    assert res != None
+    assert res['path'] != None
+    assert Path(res['path']).is_file()
+
+
+def test__depth_image__write(tmp_path):
+    my_dir = tmp_path / 'my_dir'
+    my_dir.mkdir()
+    img = im.image(2,2,[0.0,1.0,1.0,0.0])
+    img_path = my_dir / 'image.bin'
+
+    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,None,None,None,img_path,None)
+    con = parser_context(my_dir)
+    con.set_encoded_image_to_return(img)
+    parser = parsers.registered_parsers['depth_image']
     res = parser(con,snap)
     assert res != None
     assert res['path'] != None
@@ -76,38 +96,19 @@ def test__color_image__get_encoded_image_called(tmp_path):
     assert con.get_encoded_image != 0
 
 
-def test__color_image__get_encoded_image_called(tmp_path):
+def test__depth_image__get_encoded_image_called(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
-    img = im.image(2,2,(b'\xff\x00\x00'
-                                b'\x00\xff\x00'
-                                b'\x20\x20\x00'
-                                b'\x80\x80\xff'))
+    img = im.image(2,2,[0.0,1.0,1.0,0.0])
     img_path = my_dir / 'image.bin'
 
-    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,None,None,img_path,None,None)
+    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,None,None,None,img_path,None)
     con = parser_context(my_dir)
     con.set_encoded_image_to_return(img)
-    parser = parsers.registered_parsers['color_image']
+    parser = parsers.registered_parsers['depth_image']
     res = parser(con,snap)
     assert con.get_encoded_image != 0
 
-
-def test__color_image__get_encoded_image_called(tmp_path):
-    my_dir = tmp_path / 'my_dir'
-    my_dir.mkdir()
-    img = im.image(2,2,(b'\xff\x00\x00'
-                                b'\x00\xff\x00'
-                                b'\x20\x20\x00'
-                                b'\x80\x80\xff'))
-    img_path = my_dir / 'image.bin'
-
-    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,None,None,img_path,None,None)
-    con = parser_context(my_dir)
-    con.set_encoded_image_to_return(img)
-    parser = parsers.registered_parsers['color_image']
-    res = parser(con,snap)
-    assert con.get_encoded_image != 0
 
 def test_translation_content(tmp_path):
     my_dir = tmp_path / 'my_dir'
