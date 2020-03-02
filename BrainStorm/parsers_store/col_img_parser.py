@@ -8,7 +8,7 @@ def parse_col_img(context,snapshot):
     # Loading the image from the path provided
 
     print(' @@@ Debug requesting image from context')
-    image = context.get_image(snapshot.col_img_path)
+    image = context.get_encoded_image(snapshot.col_img_path)
     print(' @@@ Debug GOT image from context')
 
     def split3(data):

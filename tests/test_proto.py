@@ -2,6 +2,9 @@ import struct
 from BrainStorm import proto
 from BrainStorm import image as im
 
+TEST_USER_ID = 1
+TEST_DATE_TIME = 2
+
 
 def test_snapshot_ser_des():
     col_img = im.image(2,2,b'\xff\x00\x00'*4)
@@ -9,7 +12,7 @@ def test_snapshot_ser_des():
     trans = {'x':1.1,'y':2.2,'z':3.3}
     rot = {'x':1.1,'y':2.2,'z':3.3,'w':4.4}
     feel = (1.0,0.0,-1.0,1.0)
-    s1 = proto.Snapshot(101,trans,rot,col_img,dep_img,feel)
+    s1 = proto.Snapshot(TEST_USER_ID,TEST_DATE_TIME,trans,rot,col_img,dep_img,feel)
     s2 = proto.Snapshot.fromDict(s1.toDict())
     assert repr(s1) == repr(s2)
 
@@ -19,7 +22,7 @@ def test_snapshot_ser_des_with_nones():
     trans = None
     rot = None
     feel = None
-    s1 = proto.Snapshot(101,trans,rot,col_img,dep_img,feel)
+    s1 = proto.Snapshot(TEST_USER_ID,TEST_DATE_TIME,trans,rot,col_img,dep_img,feel)
     s2 = proto.Snapshot.fromDict(s1.toDict())
     assert repr(s1) == repr(s2)
 

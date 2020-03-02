@@ -10,7 +10,7 @@ def parse_col_img(context,snapshot):
     # Loading the image from the path provided
 
     print(' @@@ Debug requesting DEPTH image from context')
-    image = context.get_image(snapshot.dep_img_path)
+    image = context.get_encoded_image(snapshot.dep_img_path)
     print(' @@@ Debug GOT image from context')
 
     x = np.array(image.data)

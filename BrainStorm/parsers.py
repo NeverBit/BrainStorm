@@ -20,7 +20,7 @@ class parser_context:
         self.dir = storage_dir
     def get_storage_path(self):
         return self.dir
-    def get_image(self,path):
+    def get_encoded_image(self,path):
         with open(path, 'rb') as f:
             return image.fromDict(bson.loads(f.read()))
 
