@@ -66,7 +66,7 @@ def run_parser_service(name,connection_string):
     # Define parse & publish callback
     def callback(channel, method, properties, body):
         snapshot = SnapshotSlim.fromDict(json.loads(body))
-        context = parser_context('resources')
+        context = parser_context(Path('resources'))
         res = parse_func(context,snapshot)
         json_snap = json.dumps(res)
         con_to_saver.publish(json_snap)

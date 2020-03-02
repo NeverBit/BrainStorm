@@ -64,6 +64,7 @@ class reader_v2:
     def __init__(self,mindStream):
         self.file = mindStream
         self.offset = 0
+        self.count = 0
         # get stream size
         self.file.seek(0,2)
         self.size = self.file.tell()
@@ -93,6 +94,8 @@ class reader_v2:
             self.gender = 'o'
         
     def read_snapshot(self):
+        print(f'Reading new Snapshot #{self.count}. Offset: {self.offset}, Size: {self.size}')
+        self.count += 1
         if(self.offset + 4 > self.size):
             return None
         snapLen, = struct.unpack('I',self.file.read(4))
@@ -101,15 +104,15 @@ class reader_v2:
         print(f'snap self.offset + snapLen: {self.offset + snapLen} >< size: {self.size}')
         if(self.offset + snapLen > self.size):
             return None
+        self.offset += snapLen
         snap = SnapshotPb()
         snap.ParseFromString(self.file.read(snapLen))
-        print(f' @@@ DEBUG snapPB : {snap}'[:400])
-        print(f' @@@ DEBUG snapPB : {snap.color_image}'[:300])
 
         col_img = snap.color_image
         col_img = image(col_img.height,col_img.width,col_img.data)
         dep_img = snap.depth_image
-        dep_img = image(dep_img.height,dep_img.width,dep_img.data)
+        dep_img_data = dep_img.data[:] # Converting PB's 'Repeated Scalar Container' to a list
+        dep_img = image(dep_img.height,dep_img.width,dep_img_data)
     
         return Snapshot(self.uid, snap.datetime,
                         snap.pose.translation, snap.pose.rotation,

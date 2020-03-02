@@ -12,7 +12,6 @@ class image:
     def __repr__(self):
         return f'<Image: {self.height}x{self.width}>'
     def toDict(self):
-            print(' @@@ DEBUG in image toDict')
             return {
                     "height":self.height,
                     "width":self.width,

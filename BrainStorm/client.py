@@ -81,8 +81,9 @@ def upload_sample_file(host, port, file):
         while snap != None:
             print(' @@@ Debug got a snap')
             snap_msg = make_minimal_snapshot_msg(snap,supported_fields)
+            print(' @@@ Debug dictting snap')
             snapshot_dict = snap_msg.toDict()
-            snapshot_bson = bson.dumps(snapshot_dict)
+            snapshot_bson = bson.dumps(snapshot_dict)    
             print(f'bson\'d!')
             headers = {'Content-type': 'application/bson'}
             snap_response = s.post(f'{base_url}/snapshot',
@@ -90,7 +91,6 @@ def upload_sample_file(host, port, file):
                                     headers=headers)
             print(f' @@@ Debug snap sent! Response: {snap_response}')
             snap = s_reader.read_snapshot()
-            time.sleep(5.5)
     print('done')
 
 
