@@ -34,7 +34,7 @@ class Saver:
             'snapshots', meta, 
             Column('id', Integer, primary_key = True), 
             Column('uid', Integer, ForeignKey('users.id')),
-            Column('timestamp', Integer, nullable=False), 
+            Column('datetime', Integer, nullable=False), 
             Column('available_results', String, nullable=False)
         )
 
@@ -63,7 +63,7 @@ class Saver:
         available_results = []
         available_results.append(new_available_result)
         avail_res_json = json.dumps(available_results)
-        insert = Snapshot.insert().values(id=user.id,
+        insert = Snapshot.insert().values(uid=uid,
                                         name=user.name, 
                                         birthday=user.bday,
                                         gender=user.gender)
