@@ -2,6 +2,7 @@ import bson
 import click
 import gzip
 import json
+from pathlib import Path
 import requests
 import socket
 import struct
@@ -42,36 +43,48 @@ def make_minimal_snapshot_msg(snap,supported_fields):
     return Snapshot(uid,dtime,trans,rot,col_img,dep_img,feel)
 
 
+def get_http_session():
+    '''
+    Returns a HTTP session object.
+    Decoupled from upload_sample_file for testing purposes
+    '''
+    return requests.Session()
+
+
 @click.group()
 def main():
     pass
 
-@main.command(name='upload-sample')
-@click.option('-h', '--host', type=str, default='127.0.0.1')
-@click.option('-p', '--port', type=str, default=8000)
-@click.argument('file', type=click.File('rb'))
-def upload_sample_file(host, port, file):
+# @main.command(name='upload-sample')
+# @click.option('-h', '--host', type=str, default='127.0.0.1')
+# @click.option('-p', '--port', type=int, default=8000)
+# @click.argument('path', type=str)
+def upload_sample(host, port, path):
+    # Open file
+    if(path.endswith('gz')):
+        file = gzip.GzipFile(path)
+    else:
+        file = open(path, 'rb')
+
+    print(f'basak {type(host)} {type(port)}')
     base_url = f'http://{host}:{port}'
     print(' @@@ Debug before reader start ')
     reader_class = get_reader(versionNum=2)
-    if(file.name.endswith('gz')):
-        file.seek(0)
-        file = gzip.GzipFile(fileobj=file)
     s_reader = reader_class(file)
-    with requests.Session() as s:
+    with get_http_session() as sess:
         print(' @@@ Debug making hello')
         hello_msg = {'uid':s_reader.uid,
                     'username':s_reader.uname,
                     'birthday':s_reader.bday,
                     'gender':s_reader.gender}
         print(f'Hello Msg: {hello_msg}')
-        print(f'cookies: {s.cookies.get_dict()}')
-        hello_response = s.post(f'{base_url}/hello',json=hello_msg)
+        print(f'cookies: {sess.cookies.get_dict()}')
+        hello_response = sess.post(f'{base_url}/hello',json=hello_msg)
         print(hello_response)
-        print(f'cookies: {s.cookies.get_dict()}')
-        for x in requests.session().cookies:
+        print(f'cookies: {sess.cookies.get_dict()}')
+        for x in sess.cookies:
             print(f'a cookie!: {x}')
-        conf_response = s.get(f'{base_url}/config')
+        conf_response = sess.get(f'{base_url}/config')
         supported_fields = json.loads(conf_response.content)
         print(conf_response)
         print(conf_response.content)
@@ -86,7 +99,7 @@ def upload_sample_file(host, port, file):
             snapshot_bson = bson.dumps(snapshot_dict)    
             print(f'bson\'d!')
             headers = {'Content-type': 'application/bson'}
-            snap_response = s.post(f'{base_url}/snapshot',
+            snap_response = sess.post(f'{base_url}/snapshot',
                                     data=snapshot_bson,
                                     headers=headers)
             print(f' @@@ Debug snap sent! Response: {snap_response}')
@@ -94,9 +107,12 @@ def upload_sample_file(host, port, file):
     print('done')
 
 
-def upload_sample(host, port, path):
-    with open(path,'rb') as file:
-        upload_sample_file(host,port,file)
+@main.command(name='upload-sample')
+@click.option('-h', '--host', type=str, default='127.0.0.1')
+@click.option('-p', '--port', type=int, default=8000)
+@click.argument('path', type=str)
+def upload_sample_cli(host, port, path):
+    upload_sample(host,port,path)
 
 
 

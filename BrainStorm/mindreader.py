@@ -63,25 +63,20 @@ class reader_v1:
 class reader_v2:
     def __init__(self,mindStream):
         self.file = mindStream
-        self.offset = 0
         self.count = 0
-        # get stream size
-        self.file.seek(0,2)
-        self.size = self.file.tell()
-        self.file.seek(0,0)
 
 
         # Reading header
-        if(self.offset + 4 > self.size):
+        buf = self.file.read(4)
+        if not buf:
             return
-        userLen, = struct.unpack('I',self.file.read(4))
-        self.offset += 4
-        if(self.offset + userLen > self.size):
-            return None
-        self.offset += userLen
+        userLen, = struct.unpack('I',buf)
+        buf = self.file.read(userLen)
+        if not buf:
+            return
         print(f'user len: {userLen}')
         user = UserPb()
-        user.ParseFromString(self.file.read(userLen))
+        user.ParseFromString(buf)
 
         self.uid = user.user_id 
         self.uname = user.username
@@ -96,17 +91,18 @@ class reader_v2:
     def read_snapshot(self):
         print(f'Reading new Snapshot #{self.count}. Offset: {self.offset}, Size: {self.size}')
         self.count += 1
-        if(self.offset + 4 > self.size):
-            return None
-        snapLen, = struct.unpack('I',self.file.read(4))
-        self.offset += 4
+
+        
+        buf = self.file.read(4)
+        if not buf:
+            return
+        snapLen, = struct.unpack('I',buf)
         print(f'snap len: {snapLen}')
-        print(f'snap self.offset + snapLen: {self.offset + snapLen} >< size: {self.size}')
-        if(self.offset + snapLen > self.size):
-            return None
-        self.offset += snapLen
+        buf = self.file.read(snapLen)
+        if not buf:
+            return
         snap = SnapshotPb()
-        snap.ParseFromString(self.file.read(snapLen))
+        snap.ParseFromString(buf)
 
         col_img = snap.color_image
         col_img = image(col_img.height,col_img.width,col_img.data)

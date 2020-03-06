@@ -57,8 +57,9 @@ class Saver:
                                         gender=user.gender)
         connection = engine.connect()
         result = connection.execute(insert)
+        print(f"Finished saving user : {result}")
         # TODO: Check results?
-    def create_update_snapshot(self,uid,datetime,new_available_result):
+    def create_or_update_snapshot(self,uid,datetime,new_available_result):
         # Get current available_results
         available_results = []
         available_results.append(new_available_result)
@@ -67,8 +68,14 @@ class Saver:
                                         name=user.name, 
                                         birthday=user.bday,
                                         gender=user.gender)
-
-    def save(self,parser_name,data):
+        print(f"Update Snapshot : {insert} , Avail Results: {avail_res_json}")
+    def get_snapshot(self,uid,datetime):
+        # TODO
+        pass
+    def save_parser_res(self,parser_name,snapshotid,data):
+        insert = self.patsers_tables[parser_name].insert().values(
+                            snapshotid=snapshotid,encoded_results=data)
+        print(f"Update Parser Res Snapshot : {insert} , Avail Results: {avail_res_json}")
 
 
 @click.group()
@@ -80,26 +87,20 @@ def main():
 @click.argument('name', type=str)
 @click.argument('input', type=click.File('r'))
 def run_saver_once(name,input):
-    print(' @@@ Debug in run_parser_once')
-    # Resolve parser name to function
-    parse_func = registered_parsers[name]
 
-    # Parse input snapshot
-    print(' @@@ Debug fromDict')
-    snapshot = SnapshotSlim.fromDict(json.loads(input.read()))
-    # Make parser context
-    res_path = Path('resources')
-    res_path.mkdir(exist_ok=True)
-    context = parser_context(res_path)
-    print(' @@@ Debug parser context made')
-    parser_results = parse_func(context,snapshot)
-    # Wrap the parer results in a unified format for the server
     saver_msg = {
         'uid':snapshot.uid,
         'datetime':snapshot.datetime,
         'parser_name':name,
         'parser_res':parser_results
     }
+    saver_msg = json.loads(input)
+    uid = saver_msg['uid']
+    dt = saver_msg['datetime']
+    parser_name = saver_msg['parser_name']
+    parser_res = saver_msg['parser_res']
+
+
     saver_msg_json = json.dumps(saver_msg)
     print(' @@@ Debug in done parsing')
     json_snap = json.dumps(res)
