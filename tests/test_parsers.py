@@ -5,10 +5,9 @@ import os
 from pathlib import Path
 from BrainStorm import image as im
 from BrainStorm import parsers
-from BrainStorm.proto import Snapshot
-from BrainStorm.proto import SnapshotSlim
+from BrainStorm.proto import Snapshot, SnapshotSlim, UserInfo
 
-TEST_USER_ID = 1
+TEST_USER_INFO = UserInfo(42,'Name Name',10101,'m')
 TEST_DATE_TIME = 2
 
 class parser_context:
@@ -53,7 +52,7 @@ def test__color_image__write(tmp_path):
                                 b'\x80\x80\xff'))
     img_path = my_dir / 'image.bin'
 
-    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,None,None,img_path,None,None)
+    snap = SnapshotSlim(TEST_USER_INFO,TEST_DATE_TIME,None,None,img_path,None,None)
     con = parser_context(my_dir)
     con.set_encoded_image_to_return(img)
     parser = parsers.registered_parsers['color_image']
@@ -69,7 +68,7 @@ def test__depth_image__write(tmp_path):
     img = im.image(2,2,[0.0,1.0,1.0,0.0])
     img_path = my_dir / 'image.bin'
 
-    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,None,None,None,img_path,None)
+    snap = SnapshotSlim(TEST_USER_INFO,TEST_DATE_TIME,None,None,None,img_path,None)
     con = parser_context(my_dir)
     con.set_encoded_image_to_return(img)
     parser = parsers.registered_parsers['depth_image']
@@ -88,7 +87,7 @@ def test__color_image__get_encoded_image_called(tmp_path):
                                 b'\x80\x80\xff'))
     img_path = my_dir / 'image.bin'
 
-    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,None,None,img_path,None,None)
+    snap = SnapshotSlim(TEST_USER_INFO,TEST_DATE_TIME,None,None,img_path,None,None)
     con = parser_context(my_dir)
     con.set_encoded_image_to_return(img)
     parser = parsers.registered_parsers['color_image']
@@ -102,7 +101,7 @@ def test__depth_image__get_encoded_image_called(tmp_path):
     img = im.image(2,2,[0.0,1.0,1.0,0.0])
     img_path = my_dir / 'image.bin'
 
-    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,None,None,None,img_path,None)
+    snap = SnapshotSlim(TEST_USER_INFO,TEST_DATE_TIME,None,None,None,img_path,None)
     con = parser_context(my_dir)
     con.set_encoded_image_to_return(img)
     parser = parsers.registered_parsers['depth_image']
@@ -115,7 +114,7 @@ def test_translation_content(tmp_path):
     my_dir.mkdir()
     translation = {'x':1.1,'y':2.2,'z':3.3}
     rot = {'x':1.1,'y':2.2,'z':3.3,'w':4.4}
-    snap = SnapshotSlim(TEST_USER_ID,TEST_DATE_TIME,translation,None,None,None,None)
+    snap = SnapshotSlim(TEST_USER_INFO,TEST_DATE_TIME,translation,None,None,None,None)
     con = parser_context(my_dir)
     res = parsers.registered_parsers['pose'](con,snap)
     j = json.loads(res)

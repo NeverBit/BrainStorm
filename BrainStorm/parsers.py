@@ -34,18 +34,15 @@ def main():
 @click.argument('name', type=str)
 @click.argument('input', type=click.File('r'))
 def run_parser_once(name,input):
-    print(' @@@ Debug in run_parser_once')
     # Resolve parser name to function
     parse_func = registered_parsers[name]
 
     # Parse input snapshot
-    print(' @@@ Debug fromDict')
     snapshot = SnapshotSlim.fromDict(json.loads(input.read()))
     # Make parser context
     res_path = Path('resources')
     res_path.mkdir(exist_ok=True)
     context = parser_context(res_path)
-    print(' @@@ Debug parser context made')
     parser_results = parse_func(context,snapshot)
     # Wrap the parer results in a unified format for the server
     saver_msg = {
@@ -55,9 +52,7 @@ def run_parser_once(name,input):
         'parser_res':parser_results
     }
     saver_msg_json = json.dumps(saver_msg)
-    print(' @@@ Debug in done parsing')
-    json_snap = json.dumps(res)
-    print(json_snap)
+    click.echo(saver_msg_json)
 
 
 @main.command(name='run-parser')

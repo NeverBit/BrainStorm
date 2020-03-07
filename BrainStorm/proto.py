@@ -47,12 +47,36 @@ class Snapshot:
         return cls(uid,ts,trans,rot,col_img,dep_img,fee)
 
 
+class UserInfo:
+    def __init__(self,uid,name,bday,gender):
+        self.uid = uid
+        self.name = name
+        self.bday = bday
+        self.gender = gender
+    def toDict(self):
+            return {'uid':self.uid,
+                    'name':self.name,
+                    'bday':self.bday,
+                    'gender':self.gender
+                    }
+    def __repr__(self):
+        return (f'<UserInfo; Id: {self.uid}, Name: {self.name}, Birthday: {self.bday}, '
+                f'Gender: {self.gender}>')
+    @classmethod
+    def fromDict(cls,d):
+        uid = d['uid']
+        name = d['name']
+        bday = d['bday']
+        gender = d['gender']
+        return cls(uid,name,bday,gender)
+
+
 class SnapshotSlim:
     '''
     Represents a partial snapshot, excluding the binary parts (images)
     '''
-    def __init__(self,uid,datetime,translation,rotation,col_img_path,dep_img_path,feelings):
-        self.uid = uid
+    def __init__(self,user_info,datetime,translation,rotation,col_img_path,dep_img_path,feelings):
+        self.user_info = user_info
         self.datetime = datetime
         self.pose = Pose(translation, rotation)
         self.col_img_path = col_img_path
@@ -60,7 +84,7 @@ class SnapshotSlim:
         self.feelings = feelings
     def toDict(self):
             return {
-                    'uid':self.uid,
+                    'user_info':self.user_info.toDict(),
                     'datetime':self.datetime,
                     'pose':{
                             'translation':self.pose.translation,
@@ -71,16 +95,16 @@ class SnapshotSlim:
                     'feelings':self.feelings
                     }
     def __repr__(self):
-        return (f'<Snapshot; Uid: {self.uid}, Time: {self.datetime}, Trans: {self.pose.translation}, '
+        return (f'<SnapshotSlim; user_info: {self.user_info}, Time: {self.datetime}, Trans: {self.pose.translation}, '
                 f'Rot: {self.pose.rotation}, Col Img Path: {self.col_img_path}, '
-                f'Dep Img Path: {self.dep_img_path}, Feels: {self.feelings}')
+                f'Dep Img Path: {self.dep_img_path}, Feels: {self.feelings}>')
     @classmethod
     def fromDict(cls,d):
-        uid = d['uid']
+        user_info = UserInfo.fromDict(d['user_info'])
         ts = d['datetime']
         trans = d['pose']['translation']
         rot = d['pose']['rotation']
         col_img_path = d['color_image_path']
         dep_img_path = d['depth_image_path']
         fee = d['feelings']
-        return cls(uid,ts,trans,rot,col_img_path,dep_img_path,fee)
+        return cls(user_info,ts,trans,rot,col_img_path,dep_img_path,fee)

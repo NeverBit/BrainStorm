@@ -10,7 +10,7 @@ import sys
 import time
 from .image import image
 from .mindreader import get_reader
-from .proto import Snapshot
+from .proto import Snapshot, UserInfo
 
 def make_minimal_snapshot_msg(snap,supported_fields):
     '''
@@ -73,10 +73,8 @@ def upload_sample(host, port, path):
     s_reader = reader_class(file)
     with get_http_session() as sess:
         print(' @@@ Debug making hello')
-        hello_msg = {'uid':s_reader.uid,
-                    'username':s_reader.uname,
-                    'birthday':s_reader.bday,
-                    'gender':s_reader.gender}
+        user_info = UserInfo(s_reader.uid,s_reader.uname,s_reader.bday,s_reader.gender)
+        hello_msg = user_info.toDict()
         print(f'Hello Msg: {hello_msg}')
         print(f'cookies: {sess.cookies.get_dict()}')
         hello_response = sess.post(f'{base_url}/hello',json=hello_msg)

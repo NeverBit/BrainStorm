@@ -89,7 +89,7 @@ class reader_v2:
             self.gender = 'o'
         
     def read_snapshot(self):
-        print(f'Reading new Snapshot #{self.count}. Offset: {self.offset}, Size: {self.size}')
+        print(f'Reading new Snapshot #{self.count}.')
         self.count += 1
 
         

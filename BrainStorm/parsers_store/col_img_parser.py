@@ -19,7 +19,7 @@ def parse_col_img(context,snapshot):
     pil_image = PIL.new('RGB', (image.width, image.height))
     finaldata = tuple(split3(image.data))
     pil_image.putdata(finaldata)
-    save_path = context.get_storage_path() / f'{snapshot.uid}_{snapshot.datetime}_color_image.jpg'
+    save_path = context.get_storage_path() / f'{snapshot.user_info.uid}_{snapshot.datetime}_color_image.jpg'
     print(save_path)
     pil_image.save(save_path)
     print(f' @@@ Debug writing a picture of dimension: {image.width}x{image.height} -- done')

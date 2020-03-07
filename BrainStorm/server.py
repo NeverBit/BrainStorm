@@ -12,10 +12,8 @@ import time
 import threading
 from .connection import Connection
 from . import mq
-from .proto import Snapshot
-from .proto import SnapshotSlim
+from .proto import Snapshot, SnapshotSlim, UserInfo
 from . import parsers
-from . import proto
 
 
 app = flask.Flask(__name__)
@@ -58,8 +56,7 @@ class SnapshotsServer:
             print('Cookie missing in snapshot request, dropping!')
             return flask.abort(400,'Cookie missing from request. Call /hello first')
         user_cookie = base64.b64decode(flask.request.cookies[BRAINSTORM_COOKIE])
-        user_info = json.loads(user_cookie.decode())
-        uid = user_info['uid']
+        user_info = UserInfo.fromDict(json.loads(user_cookie.decode()))
         # Get snapshot from request data
         snapshot_bson = flask.request.data
         snapshot_dict = bson.loads(snapshot_bson)
@@ -82,7 +79,7 @@ class SnapshotsServer:
         print(f' @@@ DEBUG Saved images to {datetime_path}')
 
         # Make Slim snapshot (with the images paths)
-        slimshot = SnapshotSlim(uid,
+        slimshot = SnapshotSlim(user_info,
                                 datetime,
                                 snapshot.pose.translation,
                                 snapshot.pose.rotation,
@@ -126,16 +123,16 @@ def main():
 @main.command(name='run-server')
 @click.option('-h', '--host', type=str, default='127.0.0.1')
 @click.option('-p', '--port', type=str, default=8000)
-@click.argument('connection_string', type=str)
-def run_server_mq(host,port,connection_string):
-    if(connection_string == 'debug'):
+@click.argument('mq_con_string', type=str)
+def run_server_mq(host,port,mq_con_string):
+    if(mq_con_string == 'debug'):
         def debug_publish(msg):
             print(msg)
             with open('dumped.json','w+') as f:
                 f.write(msg)
         publish = debug_publish
     else:
-        mq_con = mq.create_mq_connection(connection_string,'input')
+        mq_con = mq.create_mq_connection(mq_con_string,'input')
         mq_con.open()
         publish = mq_con.publish
     run_server(host,port,publish)

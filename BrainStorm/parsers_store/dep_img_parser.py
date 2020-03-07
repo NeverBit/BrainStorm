@@ -19,7 +19,7 @@ def parse_col_img(context,snapshot):
     
     
     print(' @@@ Debug PLOTTING')
-    save_path = context.get_storage_path() / f'{snapshot.uid}_{snapshot.datetime}_depth_image.jpg'
+    save_path = context.get_storage_path() / f'{snapshot.user_info.uid}_{snapshot.datetime}_depth_image.jpg'
     plt.savefig(save_path)
     print(' @@@ Debug PLOTTEEDDDD')
     print(f' @@@ Debug writing a picture of dimension: {image.width}x{image.height} to {save_path} -- done')
