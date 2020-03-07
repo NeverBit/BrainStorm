@@ -72,30 +72,25 @@ def upload_sample(host, port, path):
     reader_class = get_reader(versionNum=2)
     s_reader = reader_class(file)
     with get_http_session() as sess:
-        print(' @@@ Debug making hello')
+        print(' @@@ Calling /hello')
         user_info = UserInfo(s_reader.uid,s_reader.uname,s_reader.bday,s_reader.gender)
         hello_msg = user_info.toDict()
-        print(f'Hello Msg: {hello_msg}')
-        print(f'cookies: {sess.cookies.get_dict()}')
+        print(f'@@@ Hello Msg Content: {hello_msg}')
         hello_response = sess.post(f'{base_url}/hello',json=hello_msg)
-        print(hello_response)
-        print(f'cookies: {sess.cookies.get_dict()}')
+        print(f'@@@ /hello Response: {hello_response}')
         for x in sess.cookies:
-            print(f'a cookie!: {x}')
+            print(f'Found a cookie for the session!: {x}')
+        print(' @@@ Calling /config')
         conf_response = sess.get(f'{base_url}/config')
         supported_fields = json.loads(conf_response.content)
-        print(conf_response)
-        print(conf_response.content)
-        print(supported_fields)
+        print(f'@@@ /config Response: {conf_response}, Supported Fields: {supported_fields}')
         # Start reading snapshots
         snap = s_reader.read_snapshot()
         while snap != None:
             print(' @@@ Debug got a snap')
             snap_msg = make_minimal_snapshot_msg(snap,supported_fields)
-            print(' @@@ Debug dictting snap')
             snapshot_dict = snap_msg.toDict()
-            snapshot_bson = bson.dumps(snapshot_dict)    
-            print(f'bson\'d!')
+            snapshot_bson = bson.dumps(snapshot_dict)
             headers = {'Content-type': 'application/bson'}
             snap_response = sess.post(f'{base_url}/snapshot',
                                     data=snapshot_bson,

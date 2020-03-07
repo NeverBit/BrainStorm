@@ -89,15 +89,14 @@ class reader_v2:
             self.gender = 'o'
         
     def read_snapshot(self):
-        print(f'Reading new Snapshot #{self.count}.')
-        self.count += 1
-
-        
         buf = self.file.read(4)
         if not buf:
             return
+        print(f'@@@ DEBUG Reading new Snapshot #{self.count}.')
+        self.count += 1
+
         snapLen, = struct.unpack('I',buf)
-        print(f'snap len: {snapLen}')
+        print(f'@@@ DEBUG snap len: {snapLen}')
         buf = self.file.read(snapLen)
         if not buf:
             return
