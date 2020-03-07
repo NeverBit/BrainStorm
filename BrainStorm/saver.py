@@ -124,9 +124,12 @@ class Saver:
         print(f"Update Parser Res Snapshot ID : {res.inserted_primary_key}")
         connection.close()
     def save(self,content_name,saver_msg):
-        # TODO
-        uid = saver_msg['uid']
-        self.save_or_get_user(uid,'woot',1337,'m')
+        user_info = saver_msg['user_info']
+        uid = user_info['uid']
+        self.save_or_get_user(uid,
+                              user_info['name'],
+                              user_info['bday'],
+                              user_info['gender'],)
         
         dt = saver_msg['datetime']
         parser_name = saver_msg['parser_name']

@@ -67,7 +67,7 @@ class SnapshotsServer:
         # Make user & time directories
         dd_path = Path(self.data_dir)
         dd_path.mkdir(exist_ok=True)
-        user_path = dd_path / f'{uid}'
+        user_path = dd_path / f'{user_info.uid}'
         user_path.mkdir(exist_ok=True)
         datetime_path = user_path / f'{datetime}'
         datetime_path.mkdir(exist_ok=True)

@@ -38,7 +38,9 @@ def run_parser_once(name,input):
     parse_func = registered_parsers[name]
 
     # Parse input snapshot
-    snapshot = SnapshotSlim.fromDict(json.loads(input.read()))
+    input_json = json.loads(input.read())
+    snapshot = SnapshotSlim.fromDict(input_json)
+    
     # Make parser context
     res_path = Path('resources')
     res_path.mkdir(exist_ok=True)
@@ -46,7 +48,7 @@ def run_parser_once(name,input):
     parser_results = parse_func(context,snapshot)
     # Wrap the parer results in a unified format for the server
     saver_msg = {
-        'uid':snapshot.uid,
+        'user_info':snapshot.user_info.toDict(),
         'datetime':snapshot.datetime,
         'parser_name':name,
         'parser_res':parser_results
@@ -76,7 +78,7 @@ def run_parser_service(name,connection_string):
         parser_results = parse_func(context,snapshot)
         # Wrap the parer results in a unified format for the server
         saver_msg = {
-            'uid':snapshot.uid,
+        'user_info':snapshot.user_info,
             'datetime':snapshot.datetime,
             'parser_name':name,
             'parser_res':parser_results
