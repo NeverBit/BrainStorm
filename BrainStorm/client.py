@@ -55,11 +55,6 @@ def get_http_session():
 def main():
     pass
 
-# @main.command(name='upload-sample')
-# @click.option('-h', '--host', type=str, default='127.0.0.1')
-# @click.option('-p', '--port', type=int, default=8000)
-# @click.argument('path', type=str)
-
 
 def upload_sample(host, port, path):
     # Open file
@@ -89,8 +84,8 @@ def upload_sample(host, port, path):
         print(' @@@ Calling /config')
         conf_response = sess.get(f'{base_url}/config')
         supported_fields = json.loads(conf_response.content)
-        print(
-            f'@@@ /config Response: {conf_response}, Supported Fields: {supported_fields}')
+        print((f'@@@ /config Response: {conf_response}, '
+               f'SupFlds: {supported_fields}'))
         # Start reading snapshots
         snap = s_reader.read_snapshot()
         while snap is not None:

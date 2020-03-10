@@ -70,8 +70,9 @@ def test__color_image__write(tmp_path):
     parser = parsers.registered_parsers['color_image']
     res = parser(con, snap)
     assert res is not None
-    assert res['path'] is not None
-    assert Path(res['path']).is_file()
+    res_dict = json.loads(res)
+    assert res_dict['data_path'] is not None
+    assert Path(res_dict['data_path']).is_file()
 
 
 def test__depth_image__write(tmp_path):
@@ -93,8 +94,9 @@ def test__depth_image__write(tmp_path):
     parser = parsers.registered_parsers['depth_image']
     res = parser(con, snap)
     assert res is not None
-    assert res['path'] is not None
-    assert Path(res['path']).is_file()
+    res_dict = json.loads(res)
+    assert res_dict['data_path'] is not None
+    assert Path(res_dict['data_path']).is_file()
 
 
 def test__color_image__get_encoded_image_called(tmp_path):
@@ -117,7 +119,7 @@ def test__color_image__get_encoded_image_called(tmp_path):
     con = parser_context(my_dir)
     con.set_encoded_image_to_return(img)
     parser = parsers.registered_parsers['color_image']
-    res = parser(con, snap)
+    parser(con, snap)
     assert con.get_encoded_image != 0
 
 
@@ -138,7 +140,7 @@ def test__depth_image__get_encoded_image_called(tmp_path):
     con = parser_context(my_dir)
     con.set_encoded_image_to_return(img)
     parser = parsers.registered_parsers['depth_image']
-    res = parser(con, snap)
+    parser(con, snap)
     assert con.get_encoded_image != 0
 
 
@@ -151,7 +153,7 @@ def test_translation_content(tmp_path):
         TEST_USER_INFO,
         TEST_DATE_TIME,
         translation,
-        None,
+        rot,
         None,
         None,
         None)

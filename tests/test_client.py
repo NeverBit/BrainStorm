@@ -31,23 +31,6 @@ _TEST_HEADER_v2 = b'\x14\x00\x00\x00\x08\x2A\x12\x0A\x44\x61\x6E\x20\x47\x69\x74
 
 
 @pytest.fixture
-def get_message():
-    parent, child = multiprocessing.Pipe()
-    process = multiprocessing.Process(target=_run_server, args=(child,))
-    process.start()
-    parent.recv()
-    try:
-        def get_message():
-            if not parent.poll(1):
-                raise TimeoutError()
-            return parent.recv()
-        yield get_message
-    finally:
-        process.terminate()
-        process.join()
-
-
-@pytest.fixture
 def get_mind_sample():
     # snapshot=b'\x00' * 64
     # snapshot += struct.pack('II',1,1)
@@ -163,7 +146,7 @@ def get_fake_sess():
     yield dummy_inst
 
 
-def test_hello_sent(get_message, get_mind_sample, tmp_path):
+def test_hello_sent(get_mind_sample, tmp_path):
     global dummy_inst
     org_getter = client.get_http_session
     dummy_inst = dummy_session()
@@ -190,7 +173,7 @@ def test_hello_sent(get_message, get_mind_sample, tmp_path):
     assert hello_in_any
 
 
-def test_config_requested(get_message, get_mind_sample, tmp_path):
+def test_config_requested(get_mind_sample, tmp_path):
     global dummy_inst
     org_getter = client.get_http_session
     dummy_inst = dummy_session()
