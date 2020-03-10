@@ -20,32 +20,31 @@ serverInst = None
 
 
 class WebServer:
-    def __init__(self,database_url):
+    def __init__(self, database_url):
         self.reader = Reader(database_url)
 
     def home(self):
         ''' Returns the home page '''
-        return flask.send_from_directory('static_resources','home.html')
+        return flask.send_from_directory('static_resources', 'home.html')
 
     def main_style(self):
         ''' Returns the home page '''
-        return flask.send_from_directory('static_resources','main.css')
+        return flask.send_from_directory('static_resources', 'main.css')
 
-    def logo_file(self,ext):
-        ''' Returns one of the logo files (html,css,js) '''
-        if ext not in ['html','css','js']:
+    def logo_file(self, ext):
+        ''' Returns one of the logo files (html, css, js) '''
+        if ext not in ['html', 'css', 'js']:
             flask.abort(404)
         mimetype = 'text'
         print(mimetypes.guess_type('style.css'))
-        return flask.send_from_directory('static_resources','logo.'+ext)
-        
+        return flask.send_from_directory('static_resources', 'logo.' + ext)
+
     def users(self):
         ''' Returns the home page '''
         users = self.reader.get_users()
         users[99] = "Shappy"
         print(f'users: {users}\r\nType: {type(users)}')
-        return flask.render_template('users.html',users=users)
-
+        return flask.render_template('users.html', users=users)
 
 
 @app.route('/')
@@ -77,13 +76,13 @@ def main():
 @click.option('-h', '--host', type=str, default='127.0.0.1')
 @click.option('-p', '--port', type=str, default=8080)
 @click.argument('database_url', type=str)
-def run_server(host, port,database_url):
+def run_server(host, port, database_url):
     global serverInst
     serverInst = WebServer(database_url)
     print(f' @@@ Debug run-server and serverInst is {serverInst}')
 
     # let flask take the reins
-    app.run(host=host,port=port,threaded=True)
+    app.run(host=host, port=port, threaded=True)
 
 
 if __name__ == '__main__':

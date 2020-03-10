@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image as PIL
 
 
-def parse_col_img(context,snapshot):
+def parse_col_img(context, snapshot):
     # Loading the image from the path provided
 
     print(' @@@ Debug requesting DEPTH image from context')
@@ -16,14 +16,17 @@ def parse_col_img(context,snapshot):
     x = np.array(image.data)
     x = x.reshape(image.height, image.width)  # or
     plt.imshow(x, cmap='hot', interpolation='nearest')
-    
-    
+
     print(' @@@ Debug PLOTTING')
-    save_path = context.get_storage_path() / f'{snapshot.user_info.uid}_{snapshot.datetime}_depth_image.jpg'
+    save_path = context.get_storage_path(
+    ) / f'{snapshot.user_info.uid}_{snapshot.datetime}_depth_image.jpg'
     plt.savefig(save_path)
     print(' @@@ Debug PLOTTEEDDDD')
-    print(f' @@@ Debug writing a picture of dimension: {image.width}x{image.height} to {save_path} -- done')
-    res_dict = {'data_path':str(save_path)}
+    print(
+        f' @@@ Debug writing a picture of dimension: {image.width}x{image.height} to {save_path} -- done')
+    res_dict = {'data_path': str(save_path)}
     j = json.dumps(res_dict)
     return j
+
+
 parse_col_img.field = 'depth_image'

@@ -20,7 +20,7 @@ BRAINSTORM_COOKIE = 'bs-user'
 
 
 class SnapshotsServer:
-    def __init__(self,data_dir,publish):
+    def __init__(self, data_dir, publish):
         self.data_dir = data_dir
         self.files_lock = threading.Lock()
         self.publish = publish
@@ -37,23 +37,23 @@ class SnapshotsServer:
             print(f'Error in /hello : {error}')
             return flask.abort(500)
 
-
     def server_config(self):
         parsers_names = list(parsers.registered_parsers.keys())
         return flask.jsonify(parsers_names)
 
-
-    def save_image(self,path,img):
+    def save_image(self, path, img):
         img_bson = bson.dumps(img.toDict())
-        with open(path,'wb') as f:
+        with open(path, 'wb') as f:
             f.write(img_bson)
 
     def client_snapshot(self):
         # Get user info from cookie
         if BRAINSTORM_COOKIE not in flask.request.cookies:
             print('Cookie missing in snapshot request, dropping!')
-            return flask.abort(400,'Cookie missing from request. Call /hello first')
-        user_cookie = base64.b64decode(flask.request.cookies[BRAINSTORM_COOKIE])
+            return flask.abort(
+                400, 'Cookie missing from request. Call /hello first')
+        user_cookie = base64.b64decode(
+            flask.request.cookies[BRAINSTORM_COOKIE])
         user_info = UserInfo.fromDict(json.loads(user_cookie.decode()))
         # Get snapshot from request data
         snapshot_bson = flask.request.data
@@ -71,9 +71,9 @@ class SnapshotsServer:
         datetime_path.mkdir(exist_ok=True)
         # Save images to filesystem
         col_img_path = datetime_path / f'color_image.bin'
-        self.save_image(col_img_path,snapshot.col_img)
-        dep_img_path = datetime_path / f'depth_image.bin' 
-        self.save_image(dep_img_path,snapshot.dep_img)
+        self.save_image(col_img_path, snapshot.col_img)
+        dep_img_path = datetime_path / f'depth_image.bin'
+        self.save_image(dep_img_path, snapshot.dep_img)
         print(f' @@@ DEBUG Saved images to {datetime_path}')
 
         # Make Slim snapshot (with the images paths)
@@ -85,7 +85,6 @@ class SnapshotsServer:
                                 str(dep_img_path),
                                 snapshot.feelings)
 
-
         # Publish to MQ
         slim_json = json.dumps(slimshot.toDict())
         self.publish(slim_json)
@@ -93,50 +92,55 @@ class SnapshotsServer:
         return flask.Response(status=200)
 
 
-@app.route('/hello', methods = ['POST'])
+@app.route('/hello', methods=['POST'])
 def client_hello():
     return serverInst.client_hello()
 
-@app.route('/config', methods = ['GET'])
+
+@app.route('/config', methods=['GET'])
 def server_config():
     return serverInst.server_config()
 
-@app.route('/snapshot', methods = ['POST'])
+
+@app.route('/snapshot', methods=['POST'])
 def client_snapshot():
     return serverInst.client_snapshot()
 
-def run_server(host, port, publish, data_dir = 'data'):
+
+def run_server(host, port, publish, data_dir='data'):
     global serverInst
-    serverInst = SnapshotsServer(data_dir,publish)
+    serverInst = SnapshotsServer(data_dir, publish)
     print(f' @@@ Debug run-server and serverInst is {serverInst}')
 
     # let flask take the reins
-    app.run(host=host,port=port,threaded=True)
+    app.run(host=host, port=port, threaded=True)
 
 
 @click.group()
 def main():
     pass
 
+
 @main.command(name='run-server')
 @click.option('-h', '--host', type=str, default='127.0.0.1')
 @click.option('-p', '--port', type=str, default=8000)
 @click.argument('mq_con_string', type=str)
-def run_server_mq(host,port,mq_con_string):
+def run_server_mq(host, port, mq_con_string):
     if(mq_con_string == 'debug'):
         def debug_publish(msg):
             print(msg)
-            with open('dumped.json','w+') as f:
+            with open('dumped.json', 'w+') as f:
                 f.write(msg)
         publish = debug_publish
     else:
-        mq_con = mq.create_mq_connection(mq_con_string,'input')
+        mq_con = mq.create_mq_connection(mq_con_string, 'input')
+
         def mq_publish(msg):
             mq_con.open()
             mq_con.publish(msg)
             mq_con.close()
         publish = mq_publish
-    run_server(host,port,publish)
+    run_server(host, port, publish)
 
 
 if __name__ == '__main__':

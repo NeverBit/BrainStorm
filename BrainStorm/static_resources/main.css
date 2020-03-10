@@ -25,7 +25,7 @@ body {
 	width: 810px;
 	height: 280px;
 	margin: 0 auto;
-	font-family: 'Sen', Arial,Helvetica Neue,Helvetica,sans-serif;
+	font-family: 'Sen', Arial, Helvetica Neue, Helvetica, sans-serif;
 	font-size: 20px;
 	text-align: center; 
 }
@@ -62,7 +62,7 @@ td {
 	padding-right: 10px;
 }
 button {
-	font-family: 'Sen', Arial,Helvetica Neue,Helvetica,sans-serif;
+	font-family: 'Sen', Arial, Helvetica Neue, Helvetica, sans-serif;
 display: inline-block;
 text-align: center;
 padding: 10px 15px;

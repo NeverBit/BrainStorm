@@ -7,45 +7,52 @@ from pathlib import Path
 import pika
 from .proto import Snapshot, SnapshotSlim, UserInfo
 import sys
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, BigInteger, String, ForeignKey, and_
+from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, and_
 
 
 app = flask.Flask(__name__)
 readerInst = None
 
 
-@app.route('/users', methods = ['GET'])
+@app.route('/users', methods=['GET'])
 def get_users_list():
     return readerInst.get_users()
 
-@app.route('/users/<int:user_id>', methods = ['GET'])
+
+@app.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = readerInst.get_user(user_id)
     if user:
         return user
     flask.abort(404)
 
-@app.route('/users/<int:user_id>/snapshots', methods = ['GET'])
+
+@app.route('/users/<int:user_id>/snapshots', methods=['GET'])
 def get_user_snapshots_list(user_id):
     if not readerInst.get_user(user_id):
         flask.abort(404)
     return readerInst.get_snapshots_by_user(user_id)
 
-@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>', methods = ['GET'])
-def get_snapshot(user_id,snapshot_id):
-    print('get_snapshot(user_id,snapshot_id):')
-    snapshot = readerInst.get_snapshot(user_id,snapshot_id)
+
+@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>', methods=['GET'])
+def get_snapshot(user_id, snapshot_id):
+    print('get_snapshot(user_id, snapshot_id):')
+    snapshot = readerInst.get_snapshot(user_id, snapshot_id)
     if snapshot:
         return snapshot
     flask.abort(404)
 
-@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>', methods = ['GET'])
-def get_result(user_id,snapshot_id,result_name):
+
+@app.route(
+    '/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>',
+    methods=['GET'])
+def get_result(user_id, snapshot_id, result_name):
     print('get_parser_res(...):')
-    results = readerInst.get_parser_res(result_name,snapshot_id)
+    results = readerInst.get_parser_res(result_name, snapshot_id)
     if results:
         return results
     flask.abort(404)
+
 
 def get_content_type_by_ext(path):
     ''' Returns an HTTP content type based on the extension of a file '''
@@ -60,21 +67,24 @@ def get_content_type_by_ext(path):
     # Fallback if we did't find the right type
     return 'application/octet-stream'
 
-@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>/data', methods = ['GET'])
-def get_result_data(user_id,snapshot_id,result_name):
+
+@app.route(
+    '/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>/data',
+    methods=['GET'])
+def get_result_data(user_id, snapshot_id, result_name):
     print('get_parser_res(...) to extract data')
-    results = readerInst.get_parser_res(result_name,snapshot_id)
+    results = readerInst.get_parser_res(result_name, snapshot_id)
     if not results:
         # Could not find specific result/snapshot
         flask.abort(404)
-    
+
     res_dict = json.loads(results)
     if 'data_path' not in res_dict:
         # The specific result type does indicate raw data is available
         flask.abort(404)
-    
+
     path = res_dict['data_path']
-    with open(path,'rb') as f:
+    with open(path, 'rb') as f:
         result_data = f.read()
 
     content_type = get_content_type_by_ext(path)
@@ -85,14 +95,15 @@ def get_result_data(user_id,snapshot_id,result_name):
 def main():
     pass
 
+
 @main.command(name='run-server')
 @click.option('-h', '--host', type=str, default='127.0.0.1')
 @click.option('-p', '--port', type=str, default=5000)
 @click.argument('database_url', type=str)
-def run_api_server(host,port,database_url):
+def run_api_server(host, port, database_url):
     global readerInst
     readerInst = Reader(database_url)
-    app.run(host=host,port=port,threaded=True)
+    app.run(host=host, port=port, threaded=True)
 
 
 if __name__ == '__main__':

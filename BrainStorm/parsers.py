@@ -18,9 +18,11 @@ registered_parsers = parsers_store.registered_parsers
 class parser_context:
     def __init__(self, storage_dir):
         self.dir = storage_dir
+
     def get_storage_path(self):
         return self.dir
-    def get_encoded_image(self,path):
+
+    def get_encoded_image(self, path):
         with open(path, 'rb') as f:
             return image.fromDict(bson.loads(f.read()))
 
@@ -33,25 +35,25 @@ def main():
 @main.command(name='parse')
 @click.argument('name', type=str)
 @click.argument('input', type=click.File('r'))
-def run_parser_once(name,input):
+def run_parser_once(name, input):
     # Resolve parser name to function
     parse_func = registered_parsers[name]
 
     # Parse input snapshot
     input_json = json.loads(input.read())
     snapshot = SnapshotSlim.fromDict(input_json)
-    
+
     # Make parser context
     res_path = Path('resources')
     res_path.mkdir(exist_ok=True)
     context = parser_context(res_path)
-    parser_results = parse_func(context,snapshot)
+    parser_results = parse_func(context, snapshot)
     # Wrap the parer results in a unified format for the server
     saver_msg = {
-        'user_info':snapshot.user_info.toDict(),
-        'datetime':snapshot.datetime,
-        'parser_name':name,
-        'parser_res':parser_results
+        'user_info': snapshot.user_info.toDict(),
+        'datetime': snapshot.datetime,
+        'parser_name': name,
+        'parser_res': parser_results
     }
     saver_msg_json = json.dumps(saver_msg)
     click.echo(saver_msg_json)
@@ -60,7 +62,7 @@ def run_parser_once(name,input):
 @main.command(name='run-parser')
 @click.argument('name', type=str)
 @click.argument('connection_string', type=str)
-def run_parser_service(name,connection_string):
+def run_parser_service(name, connection_string):
     # Resolve parser name to function
     parse_func = registered_parsers[name]
 
@@ -72,13 +74,13 @@ def run_parser_service(name,connection_string):
     def callback(channel, method, properties, body):
         snapshot = SnapshotSlim.fromDict(json.loads(body))
         context = parser_context(Path('resources'))
-        parser_results = parse_func(context,snapshot)
+        parser_results = parse_func(context, snapshot)
         # Wrap the parer results in a unified format for the server
         saver_msg = {
-            'user_info':snapshot.user_info.toDict(),
-            'datetime':snapshot.datetime,
-            'parser_name':name,
-            'parser_res':parser_results
+            'user_info': snapshot.user_info.toDict(),
+            'datetime': snapshot.datetime,
+            'parser_name': name,
+            'parser_res': parser_results
         }
         saver_msg_json = json.dumps(saver_msg)
         print(f' @@@ Debug Opening MQ connection')
@@ -106,4 +108,3 @@ if __name__ == '__main__':
         print(error)
         print(f'ERROR: {error}')
         sys.exit(1)
- 

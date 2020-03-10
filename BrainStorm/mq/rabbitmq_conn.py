@@ -1,7 +1,8 @@
 import pika
 
+
 class rabbitmq_conn:
-    def __init__(self,host,port,exchange):
+    def __init__(self, host, port, exchange):
         self.host = host
         self.port = port
         self.exchange = exchange
@@ -11,20 +12,18 @@ class rabbitmq_conn:
         params = pika.ConnectionParameters(self.host, self.port)
         self.connection = pika.BlockingConnection(params)
         self.channel = self.connection.channel()
-        self.channel.exchange_declare(exchange=self.exchange, exchange_type='topic')
+        self.channel.exchange_declare(exchange=self.exchange,
+                                      exchange_type='topic')
 
     def close(self):
         self.connection.close()
 
-    def publish(self,msg,topic='default_topic'):
+    def publish(self, msg, topic='default_topic'):
         # publishing to the entire exchange
-        self.channel.basic_publish(
-            exchange = self.exchange,
-            routing_key = topic,
-            body = msg
-        )
-        
-    def start_consume(self,callback,topics=None):
+        self.channel.basic_publish(exchange=self.exchange, routing_key=topic,
+                                   body=msg)
+
+    def start_consume(self, callback, topics=None):
         # Creating new nameless queue in the exchange and consuming from it
         result = self.channel.queue_declare(queue='', exclusive=True)
         queue_name = result.method.queue
@@ -35,12 +34,9 @@ class rabbitmq_conn:
             topics = ('#')
         for binding_key in topics:
             self.channel.queue_bind(exchange=self.exchange,
-                                    queue=queue_name, 
+                                    queue=queue_name,
                                     routing_key=binding_key)
 
-        self.channel.basic_consume(
-            queue = queue_name,
-            auto_ack = True,
-            on_message_callback = callback,
-        )
+        self.channel.basic_consume(queue=queue_name, auto_ack=True,
+                                   on_message_callback=callback)
         self.channel.start_consuming()

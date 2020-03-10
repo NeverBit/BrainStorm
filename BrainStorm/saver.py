@@ -14,18 +14,19 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, BigInteg
 
 parsers_names = list(parsers.registered_parsers.keys())
 
-class Saver(DbBase):
-    def __init__(self,database_url):
-        DbBase.__init__(self,database_url)
 
-    def get_or_create_user_id(self,uid,name,bday,gender):
-        ''' 
+class Saver(DbBase):
+    def __init__(self, database_url):
+        DbBase.__init__(self, database_url)
+
+    def get_or_create_user_id(self, uid, name, bday, gender):
+        '''
         Tries to get the user id for a given user from the db. if not found, creates
         a new entry in the db and return the new id
         '''
         query = self.users_table.select().where(and_(self.users_table.c.id == uid))
         connection = self.engine.connect()
-        found = connection.execute(query).fetchone() != None
+        found = connection.execute(query).fetchone() is not None
         print(f"Finished getting user : {found}")
         connection.close()
         if found:
@@ -33,9 +34,9 @@ class Saver(DbBase):
 
         print(f"User not found, adding new user with id: {uid}")
         insert = self.users_table.insert().values(id=uid,
-                                        name=name, 
-                                        birthday=bday,
-                                        gender=gender)
+                                                  name=name,
+                                                  birthday=bday,
+                                                  gender=gender)
         connection = self.engine.connect()
         result = connection.execute(insert)
         print(f"Finished saving user : {result}")
@@ -44,84 +45,86 @@ class Saver(DbBase):
         connection.close()
         return result.inserted_primary_key[0]
 
-    def get_snapshot(self,uid,datetime):
+    def get_snapshot(self, uid, datetime):
         ''' Returns the row of the matching snapshot entry or None if not in DB '''
         # Get current available_results
         print(f" getting snapshot : {uid} - {datetime}")
         query = self.snapshots_table.select().where(
-                        and_(self.snapshots_table.c.uid == uid,
-                             self.snapshots_table.c.datetime == datetime))
+            and_(self.snapshots_table.c.uid == uid,
+                 self.snapshots_table.c.datetime == datetime))
         connection = self.engine.connect()
         match = connection.execute(query).fetchone()
         print(f"Finished getting snapshot : {match}")
         connection.close()
         return match
 
-    def update_or_create_snapshot(self,uid,datetime,new_available_result):
-        ''' 
+    def update_or_create_snapshot(self, uid, datetime, new_available_result):
+        '''
         Tries to update a snapshot db entry wiuth new 'avilable results'.
         if not found, creates a new entry in the db.
         Returns the id of the existing/new db entry
         '''
-        match = self.get_snapshot(uid,datetime)
+        match = self.get_snapshot(uid, datetime)
         connection = self.engine.connect()
 
         # Build new array of 'parsed results'
         available_results = []
-        if match: # Get previous results from match
+        if match:  # Get previous results from match
             available_results = json.loads(match.available_results)
         # Add current new result
         if new_available_result not in available_results:
             available_results.append(new_available_result)
         print(f'NEW existing available_results: {available_results}')
         avail_res_json = json.dumps(available_results)
-        
-        # Execute an UPDATE or INSERT based on whether we found an entry for the snapshot
+
+        # Execute an UPDATE or INSERT based on whether we found an entry for
+        # the snapshot
         if match:
             # Snapshot already in DB, need an UPDATE
             print('UPDATING existing snapshot')
             update = self.snapshots_table.update()
             update = update.values(available_results=avail_res_json)
-            update = update.where(self.snapshots_table.c.id==match.id)
+            update = update.where(self.snapshots_table.c.id == match.id)
             res = connection.execute(update)
             res_id = match.id
         else:
             # Snapshot not in DB, need an INSERT
             print('INSERTING new snapshot')
-            insert = self.snapshots_table.insert().values(uid=uid,
-                                            datetime=datetime,
-                                            available_results=avail_res_json)
+            insert = self.snapshots_table.insert().values(
+                uid=uid, datetime=datetime, available_results=avail_res_json)
             res = connection.execute(insert)
             res_id = res.inserted_primary_key[0]
         connection.close()
         return res_id
-    def save_parser_res(self,parser_name,snapshotid,data):
+
+    def save_parser_res(self, parser_name, snapshotid, data):
         insert = self.parsers_tables[parser_name].insert().values(
-                            snapshotid=snapshotid,encoded_results=data)
+            snapshotid=snapshotid, encoded_results=data)
         connection = self.engine.connect()
         res = connection.execute(insert)
         print(f"Update Parser Res Snapshot : {res}")
         print(f"Update Parser Res Snapshot ID : {res.inserted_primary_key}")
         connection.close()
         return res.inserted_primary_key[0]
-    def save(self,content_name,saver_msg):
+
+    def save(self, content_name, saver_msg):
         user_info = saver_msg['user_info']
         uid = user_info['uid']
         self.get_or_create_user_id(uid,
-                              user_info['name'],
-                              user_info['bday'],
-                              user_info['gender'],)
-        
+                                   user_info['name'],
+                                   user_info['bday'],
+                                   user_info['gender'],)
+
         dt = saver_msg['datetime']
         parser_name = saver_msg['parser_name']
-        snapid = self.update_or_create_snapshot(uid,dt,parser_name)
+        snapid = self.update_or_create_snapshot(uid, dt, parser_name)
         if not snapid:
             # Snapshot already has this info
             print('Failure, content already added to snapshot')
             return
 
         parser_res = saver_msg['parser_res']
-        self.save_parser_res(parser_name,snapid,parser_res)
+        self.save_parser_res(parser_name, snapid, parser_res)
         pass
 
 
@@ -131,13 +134,17 @@ def main():
 
 
 @main.command(name='save')
-@click.option('-d','--database', type=str, default='postgres://postgres:pass@127.0.0.1:5432/postgres',
-                help='Connection string to db. Format: db_type://user:pass@host:port/database_name')
+@click.option(
+    '-d',
+    '--database',
+    type=str,
+    default='postgres://postgres:pass@127.0.0.1:5432/postgres',
+    help='Connection string to db. Format: db_type://user:pass@host:port/database_name')
 @click.argument('name', type=str)
 @click.argument('input', type=click.File('rb'))
-def run_saver_once(database,name,input):
+def run_saver_once(database, name, input):
     '''
-    Runs the saver once for input (read from INPUT) 
+    Runs the saver once for input (read from INPUT)
     from a given topic (given in NAME) and writing to a db
     '''
     saver_msg = json.loads(input.read())
@@ -145,16 +152,19 @@ def run_saver_once(database,name,input):
     s = Saver(database)
 
     print(' @@@ Calling Saver.Save()')
-    s.save(name,saver_msg)
+    s.save(name, saver_msg)
     print(' @@@ Returned from Saver.Save()')
 
 
 @main.command(name='run-saver')
-@click.argument('database_str', type=str, default='postgres://postgres:pass@127.0.0.1:5432/postgres')
+@click.argument(
+    'database_str',
+    type=str,
+    default='postgres://postgres:pass@127.0.0.1:5432/postgres')
 @click.argument('mq_str', type=str, default='rabbitmq://127.0.0.1:5672/')
-def run_saver_service(database_str,mq_str):
+def run_saver_service(database_str, mq_str):
     '''
-    Runs the saver as a service, reading from MQ_STR and writing to db at DATABASE_STR. 
+    Runs the saver as a service, reading from MQ_STR and writing to db at DATABASE_STR.
     MQ_STR format: mq_type://host:port/
     DATABASE_STR format: db_type://user:pass@host:port/database_name
     '''
@@ -165,7 +175,7 @@ def run_saver_service(database_str,mq_str):
     def callback(channel, method, properties, body):
         print(f'SAVER got New MQ Message! Channel: {channel} Body: {body}')
         saver_msg = json.loads(body)
-        s.save(channel,saver_msg)
+        s.save(channel, saver_msg)
 
     # Consume input mq
     print(f' @@@ Debug Creating MQ connection input')
@@ -177,7 +187,6 @@ def run_saver_service(database_str,mq_str):
     print(' @@@ Debug start_consume MQ connection')
 
 
-
 if __name__ == '__main__':
     try:
         main(prog_name='BrainStorm.saver', obj={})
@@ -185,4 +194,3 @@ if __name__ == '__main__':
         print(error)
         print(f'ERROR: {error}')
         sys.exit(1)
- 

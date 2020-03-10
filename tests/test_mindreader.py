@@ -25,17 +25,15 @@ def test_get_reader_version_2():
     assert mindreader.get_reader(2) == mindreader.reader_v2
 
 
-
 def test_v1_header_parsing():
     r = mindreader.reader_v1(io.BytesIO(_TEST_HEADER_v1))
     assert r.uname == _H1_NAME
-    assert r.uid == 42 
+    assert r.uid == 42
     assert r.gender == 'm'
-
 
 
 def test_v2_header_parsing():
     r = mindreader.reader_v2(io.BytesIO(_TEST_HEADER_v2))
     assert r.uname == _H1_NAME
-    assert r.uid == 42 
+    assert r.uid == 42
     assert r.gender == 'm'

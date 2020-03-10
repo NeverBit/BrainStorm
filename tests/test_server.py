@@ -33,7 +33,9 @@ _THOUGHT_2 = "I'm sleepy"
 @pytest.fixture
 def data_dir(tmp_path):
     parent, child = multiprocessing.Pipe()
-    process = multiprocessing.Process(target=_run_server, args=(child, tmp_path))
+    process = multiprocessing.Process(
+        target=_run_server, args=(
+            child, tmp_path))
     process.start()
     parent.recv()
     try:
@@ -77,7 +79,7 @@ def DISABLED_test_thought(data_dir):
 def DISABLED_test_partial_data(data_dir):
     message = _serialize_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
     with socket.socket() as connection:
-        time.sleep(0.1) # Wait for server to start listening.
+        time.sleep(0.1)  # Wait for server to start listening.
         connection.connect(_SERVER_ADDRESS_TUP)
         for c in message:
             connection.sendall(bytes([c]))
@@ -97,7 +99,6 @@ def DISABLED_test_race_condition(data_dir):
         assert thoughts == {_THOUGHT_1, _THOUGHT_2}
 
 
-
 def _run_server(pipe, data_dir):
     pipe.send('read')
     run_server(_SERVER_HOST, _SERVER_PORT, print, data_dir=data_dir)
@@ -106,11 +107,11 @@ def _run_server(pipe, data_dir):
 def _upload_thought(user_id, timestamp, thought):
     message = _serialize_thought(user_id, timestamp, thought)
     with socket.socket() as connection:
-        time.sleep(0.1) # Wait for server to start listening.
+        time.sleep(0.1)  # Wait for server to start listening.
         connection.settimeout(2)
         connection.connect(_SERVER_ADDRESS_TUP)
         connection.sendall(message)
-    time.sleep(0.2) # Wait for server to write thought.
+    time.sleep(0.2)  # Wait for server to write thought.
 
 
 def _serialize_thought(user_id, timestamp, thought):
