@@ -1,4 +1,3 @@
-import socket
 import struct
 
 class Connection:

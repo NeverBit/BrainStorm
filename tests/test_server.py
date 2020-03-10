@@ -3,7 +3,6 @@ import io
 import multiprocessing
 import pathlib
 import signal
-import socket
 import struct
 import subprocess
 import sys

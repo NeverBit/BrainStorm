@@ -15,10 +15,11 @@ canvas {
     top: 0;
     left: 0;
 }
-
 @font-face {
-  font-family: Biko;
-  src:url("biko-black.woff");
+  font-family: 'Titillium Web script=all rev=1';
+  font-style: normal;
+  font-weight: 900;
+  src:   url(https://fonts.gstatic.com/l/font?kit=NaPDcZTIAOhVxoMyOr9n_E7ffEDBKIlh7L25kEAd4d2ol1a0j2JSXUqHFcUygMZP4gUuKqByZB8nNlIHhvqjf8kc-MoKZujazGHey0kW1O-rw9KLr8vVFykAoZaTq6VqbxjzOqKVEQiTzSbELK9ok2tXSJWnnk_L492rny50cZ-migV4q1QekbWLuXF4qg7klfCiIljkknmKlSi1O_Ey9yZdmlg&skey=1834815bec1b8264&v=v8) format('woff2');
 }
 
 svg { 
@@ -30,10 +31,10 @@ svg {
   text-align: center;
 }
 svg text {
-  font-family: Biko, sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 42px;
+  font-family: "Titillium Web script=all rev=1",  "Adobe Blank";
+  font-weight: 900;
+  font-style: normal;
+  font-size: 45px;
   text-align: center;
   position: relative;
 }
@@ -45,5 +46,5 @@ svg > rect {
     mask: url(#mask);
 }
 #outter {
-  fill: #101010;
+  fill: #222227;
 }

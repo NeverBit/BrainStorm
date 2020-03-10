@@ -9,9 +9,12 @@ class rabbitmq_conn:
     def open(self):
         # Create connection to MQ
         params = pika.ConnectionParameters(self.host, self.port)
-        connection = pika.BlockingConnection(params)
-        self.channel = connection.channel()
+        self.connection = pika.BlockingConnection(params)
+        self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange=self.exchange, exchange_type='topic')
+
+    def close(self):
+        self.connection.close()
 
     def publish(self,msg,topic='default_topic'):
         # publishing to the entire exchange

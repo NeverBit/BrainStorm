@@ -23,5 +23,7 @@ def parse_col_img(context,snapshot):
     plt.savefig(save_path)
     print(' @@@ Debug PLOTTEEDDDD')
     print(f' @@@ Debug writing a picture of dimension: {image.width}x{image.height} to {save_path} -- done')
-    return {'path':str(save_path)}
+    res_dict = {'data_path':str(save_path)}
+    j = json.dumps(res_dict)
+    return j
 parse_col_img.field = 'depth_image'

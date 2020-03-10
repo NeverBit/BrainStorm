@@ -5,7 +5,6 @@ import pathlib
 import subprocess
 import os
 import io
-import socket
 import struct
 import time
 import traceback

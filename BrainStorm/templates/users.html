@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block nav_bar %}
+⯈<a href="/users">Users</a>
+{% endblock %}
+
+{% block content %}
+
+<ul style="text-align: left;">
+{% for user_id in users %}
+<li>
+	<a href="/user/{{ user_id }}">{{ user_id }} - {{ users[user_id] }}</a>
+{% endfor %}
+</ul>
+{% endblock %}

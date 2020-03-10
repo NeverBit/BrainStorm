@@ -497,7 +497,10 @@ function randint(max, min) {
     control = {
         childNum: 3,
         color: [255, 255, 255],
-        backgroundColor: '#0b5693'
+
+        // S.S: This is the actual BACKGROUND COLOR
+        // for the text (behind the lightning)
+        backgroundColor: '#4789de'
     };
 
 

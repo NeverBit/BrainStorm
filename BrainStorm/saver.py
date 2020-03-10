@@ -1,5 +1,5 @@
-import bson
 import click
+from .db_access import DbBase
 from .image import image
 import importlib
 import json
@@ -8,49 +8,21 @@ from . import parsers_store
 from . import parsers
 from pathlib import Path
 import pika
-from .proto import Snapshot
-from .proto import SnapshotSlim
+from .proto import Snapshot, SnapshotSlim
 import sys
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, BigInteger, String, ForeignKey, and_
 
 parsers_names = list(parsers.registered_parsers.keys())
 
-class Saver:
+class Saver(DbBase):
     def __init__(self,database_url):
-        print(f'Saver Connecting to: {database_url}')
-        self.engine = create_engine(database_url)
-        # Create tables in DB (if required)
-        meta = MetaData()
+        DbBase.__init__(self,database_url)
 
-        self.users_table = Table(
-            'users', meta, 
-            Column('id', Integer, primary_key = True), 
-            Column('name', String, nullable=False), 
-            Column('birthday', Integer, nullable=False),
-            Column('gender', String, nullable=False), 
-        )
-
-        self.snapshots_table = Table(
-            'snapshots', meta, 
-            Column('id', Integer, primary_key = True), 
-            Column('uid', Integer, ForeignKey('users.id')),
-            Column('datetime', BigInteger, nullable=False), 
-            Column('available_results', String, nullable=False)
-        )
-
-        self.patsers_tables = {}
-        for parser in parsers_names:    
-            self.patsers_tables[parser] = Table(
-                parser, meta, 
-                Column('id', Integer, primary_key = True), 
-                Column('snapshotid', Integer, ForeignKey('snapshots.id')),
-                Column('encoded_results', String, nullable=False), 
-            )
-
-        meta.create_all(self.engine)
-
-    def save_or_get_user(self,uid,name,bday,gender):
-        # TODO: Check if already exists?
+    def get_or_create_user_id(self,uid,name,bday,gender):
+        ''' 
+        Tries to get the user id for a given user from the db. if not found, creates
+        a new entry in the db and return the new id
+        '''
         query = self.users_table.select().where(and_(self.users_table.c.id == uid))
         connection = self.engine.connect()
         found = connection.execute(query).fetchone() != None
@@ -71,7 +43,9 @@ class Saver:
         # TODO: Check results?
         connection.close()
         return result.inserted_primary_key[0]
-    def save_or_get_snapshot(self,uid,datetime,new_available_result):
+
+    def get_snapshot(self,uid,datetime):
+        ''' Returns the row of the matching snapshot entry or None if not in DB '''
         # Get current available_results
         print(f" getting snapshot : {uid} - {datetime}")
         query = self.snapshots_table.select().where(
@@ -80,60 +54,67 @@ class Saver:
         connection = self.engine.connect()
         match = connection.execute(query).fetchone()
         print(f"Finished getting snapshot : {match}")
+        connection.close()
+        return match
+
+    def update_or_create_snapshot(self,uid,datetime,new_available_result):
+        ''' 
+        Tries to update a snapshot db entry wiuth new 'avilable results'.
+        if not found, creates a new entry in the db.
+        Returns the id of the existing/new db entry
+        '''
+        match = self.get_snapshot(uid,datetime)
+        connection = self.engine.connect()
+
+        # Build new array of 'parsed results'
+        available_results = []
+        if match: # Get previous results from match
+            available_results = json.loads(match.available_results)
+        # Add current new result
+        if new_available_result not in available_results:
+            available_results.append(new_available_result)
+        print(f'NEW existing available_results: {available_results}')
+        avail_res_json = json.dumps(available_results)
+        
+        # Execute an UPDATE or INSERT based on whether we found an entry for the snapshot
         if match:
             # Snapshot already in DB, need an UPDATE
             print('UPDATING existing snapshot')
-            print(f'Has commit? {type(match)}')
-            entry = dict(match)
-            available_results = match.available_results
-            if new_available_result in available_results:
-                # Already added
-                print(f"Update SHORT")
-                return None
-            available_results.append(new_available_result)
-            avail_res_json = json.dumps(available_results)
-            update = self.snapshots_table.update(self.snapshots_table.c.id==match.id).execute(available_results=avail_res_json)
-            print(update)
+            update = self.snapshots_table.update()
+            update = update.values(available_results=avail_res_json)
+            update = update.where(self.snapshots_table.c.id==match.id)
             res = connection.execute(update)
-            print(f"Update snap Res : {res}")
-            print(f"Update snap Res ID : {res.inserted_primary_key}")
-            connection.close()
-            pass
+            res_id = match.id
         else:
             # Snapshot not in DB, need an INSERT
             print('INSERTING new snapshot')
-            available_results = []
-            available_results.append(new_available_result)
-            avail_res_json = json.dumps(available_results)
             insert = self.snapshots_table.insert().values(uid=uid,
                                             datetime=datetime,
                                             available_results=avail_res_json)
-            print(f"Insert Snapshot : {insert} , Avail Results: {avail_res_json}")
-            connection = self.engine.connect()
             res = connection.execute(insert)
-            print(f"Insert snap Res : {res}")
-            print(f"Insert snap Res ID : {res.inserted_primary_key}")
-            connection.close()
-            return res.inserted_primary_key[0]
+            res_id = res.inserted_primary_key[0]
+        connection.close()
+        return res_id
     def save_parser_res(self,parser_name,snapshotid,data):
-        insert = self.patsers_tables[parser_name].insert().values(
+        insert = self.parsers_tables[parser_name].insert().values(
                             snapshotid=snapshotid,encoded_results=data)
         connection = self.engine.connect()
         res = connection.execute(insert)
         print(f"Update Parser Res Snapshot : {res}")
         print(f"Update Parser Res Snapshot ID : {res.inserted_primary_key}")
         connection.close()
+        return res.inserted_primary_key[0]
     def save(self,content_name,saver_msg):
         user_info = saver_msg['user_info']
         uid = user_info['uid']
-        self.save_or_get_user(uid,
+        self.get_or_create_user_id(uid,
                               user_info['name'],
                               user_info['bday'],
                               user_info['gender'],)
         
         dt = saver_msg['datetime']
         parser_name = saver_msg['parser_name']
-        snapid = self.save_or_get_snapshot(uid,dt,parser_name)
+        snapid = self.update_or_create_snapshot(uid,dt,parser_name)
         if not snapid:
             # Snapshot already has this info
             print('Failure, content already added to snapshot')
@@ -177,7 +158,24 @@ def run_saver_service(database_str,mq_str):
     MQ_STR format: mq_type://host:port/
     DATABASE_STR format: db_type://user:pass@host:port/database_name
     '''
-    pass
+    # Create DB connection towards saver
+    s = Saver(database_str)
+
+    # Define save callback
+    def callback(channel, method, properties, body):
+        print(f'SAVER got New MQ Message! Channel: {channel} Body: {body}')
+        saver_msg = json.loads(body)
+        s.save(channel,saver_msg)
+
+    # Consume input mq
+    print(f' @@@ Debug Creating MQ connection input')
+    con_to_input = mq.create_mq_connection(mq_str, 'parsers')
+    print(' @@@ Debug Opening MQ connection')
+    con_to_input.open()
+    print(' @@@ Debug Opened MQ connection')
+    con_to_input.start_consume(callback)
+    print(' @@@ Debug start_consume MQ connection')
+
 
 
 if __name__ == '__main__':

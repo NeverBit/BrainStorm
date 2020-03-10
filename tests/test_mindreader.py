@@ -3,7 +3,6 @@ import multiprocessing
 import pathlib
 import subprocess
 import os
-import socket
 import struct
 import time
 import io

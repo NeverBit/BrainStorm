@@ -5,12 +5,10 @@ import flask
 import json
 from pathlib import Path
 import pika
-import socket
 import struct
 import sys
 import time
 import threading
-from .connection import Connection
 from . import mq
 from .proto import Snapshot, SnapshotSlim, UserInfo
 from . import parsers
@@ -133,8 +131,11 @@ def run_server_mq(host,port,mq_con_string):
         publish = debug_publish
     else:
         mq_con = mq.create_mq_connection(mq_con_string,'input')
-        mq_con.open()
-        publish = mq_con.publish
+        def mq_publish(msg):
+            mq_con.open()
+            mq_con.publish(msg)
+            mq_con.close()
+        publish = mq_publish
     run_server(host,port,publish)
 
 

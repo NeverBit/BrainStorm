@@ -1,4 +1,3 @@
-import socket
 class Connection:
     @classmethod
     def connect(cls,ip,port):

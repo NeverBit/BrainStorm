@@ -4,7 +4,6 @@ import gzip
 import json
 from pathlib import Path
 import requests
-import socket
 import struct
 import sys
 import time
