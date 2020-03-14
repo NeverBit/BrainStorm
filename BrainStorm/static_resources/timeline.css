@@ -164,7 +164,7 @@
 }
 
 .outerwrapper svg .locations {
-	fill: #999999;
+	fill: #3b3b3b;
 	cursor: pointer;
 	-webkit-transition: all 0.2s ease;                  
 	-moz-transition: all 0.2s ease;                 

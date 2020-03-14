@@ -274,7 +274,7 @@ $.ajax({
 						var miniHeight = 75;
 						var mainHeight = height - miniHeight - 50;
 
-						var zoom = 1;
+						var zoom = 5;
 						var maxZoom = 10;
 						var zoomIncrement = 1;
 
@@ -710,7 +710,7 @@ $.ajax({
 									xDayAxis.ticks(d3.time.hours, 1);
 								}
 								/* ticks for a minutes */
-								else if ((timeEnd - timeBegin) > 60000  ) {
+								else if ((timeEnd - timeBegin) > 120000  ) {
 										xMonthAxis.ticks(d3.time.minutes, 4).tickFormat(d3.time.format('%H:%M'));
 										xDayAxis.ticks(d3.time.minutes, 1);
 								}
