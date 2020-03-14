@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block includes %}
+<link rel="stylesheet" href="/static/timeline.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+{% endblock %}
+
+{% block nav_bar %}
+⯈ <a href="/users">Users</a>
+⯈ <a href="/users/{{ user.id }}">{{user.name}}</a>
+{% endblock %}
+
+{% block content %}
+
+<table style="margin: auto; width: 82%;">
+	<tr>
+		<td>
+			<div style="text-align: left;">
+				<p style="font-weight: bold;">User Info:</p>
+				<p>
+				ID: {{user.id}}</br>
+				Name: {{user.name}}</br>
+				Birthday: {{user.birthday}}</br>
+				Gender: {{user.gender}}</br>
+				</p>
+				<p style="font-weight: bold;">Snapshots:</p>
+			</div>
+		</td>
+		<td>
+			<img src="/static/prof_pic.png" style="max-height: 180px;">
+		</td>
+	</tr>
+</table>
+<!-- <ul style="text-align: left;">
+	{% for snap in snapshots %}
+	<li>
+		<a href="/users/{{ user.id }}/snapshots/{{ snap }}">{{ snap }}</a>
+	</li>
+	{% endfor %}
+</ul> -->
+<!-- https://codepen.io/chris-creditdesign/pen/yuFjr -->
+<div class="outerwrapper">
+
+	<div class="timeline">
+		<div class="timeline-header">
+			<h3>INTERACTIVE VIEWER:</h3>
+			<p class="timeline-standfirst" style="white-space: pre-line"></p>
+		</div>
+		<div class="tooltip">
+			<p></p>
+		</div>
+	</div> <!-- timeline -->
+	
+	<div class="info-box">
+		<div class="panel"></div>
+	</div>
+	
+</div> <!-- outerwrapper -->	
+<script type="text/javascript" src="/static/timeline.js"></script>
+{% endblock %}

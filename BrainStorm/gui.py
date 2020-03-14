@@ -1,21 +1,21 @@
 import click
+import datetime
+from . import db_access
 from .db_access import Reader
 import flask
 from .image import image
 import importlib
 import json
 import mimetypes
-from . import mq
-from . import parsers_store
-from . import parsers
+import os
 from pathlib import Path
 import pika
 from .proto import Snapshot, SnapshotSlim
 import sys
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, BigInteger, String, ForeignKey, and_
 
 
 app = flask.Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 serverInst = None
 
 
@@ -23,48 +23,129 @@ class WebServer:
     def __init__(self, database_url):
         self.reader = Reader(database_url)
 
-    def home(self):
+    def get_home_page(self):
         ''' Returns the home page '''
-        return flask.send_from_directory('static_resources', 'home.html')
+        return flask.render_template('home.html')
 
-    def main_style(self):
-        ''' Returns the home page '''
-        return flask.send_from_directory('static_resources', 'main.css')
+    def get_static_res(self, res_name):
+        ''' Returns one of the static resources files'''
+        return flask.send_from_directory('static_resources', res_name)
 
-    def logo_file(self, ext):
-        ''' Returns one of the logo files (html, css, js) '''
-        if ext not in ['html', 'css', 'js']:
-            flask.abort(404)
-        mimetype = 'text'
-        print(mimetypes.guess_type('style.css'))
-        return flask.send_from_directory('static_resources', 'logo.' + ext)
-
-    def users(self):
-        ''' Returns the home page '''
+    def get_users_page(self):
+        ''' Returns all users page '''
         users = self.reader.get_users()
         users[99] = "Shappy"
-        print(f'users: {users}\r\nType: {type(users)}')
         return flask.render_template('users.html', users=users)
+
+    def get_user_page(self, uid):
+        ''' Returns a user's page '''
+        user = self.reader.get_user(uid)
+        if not user:
+            flask.abort(404)
+        snapshots = self.reader.get_snapshots_by_user(uid)
+        converted_ticks = datetime.datetime.fromtimestamp(user['birthday'])
+        user['birthday'] = converted_ticks.strftime("%Y-%m-%d")
+        return flask.render_template('user.html', user=user,
+                                     snapshots=snapshots)
+
+    def get_snapshot_page(self, uid, snapshot_id):
+        ''' Returns a snapshot's page '''
+        user = self.reader.get_user(uid)
+        if not user:
+            flask.abort(404)
+        snapshot = self.reader.get_snapshot(uid, snapshot_id)
+        if not snapshot:
+            flask.abort(404)
+        print(f'snapshot: {snapshot}')
+        ssdt = snapshot['datetime']
+        print(f'snapshot datetime: {ssdt}, type: {type(ssdt)}')
+        converted_ticks = datetime.datetime.now() + datetime.timedelta(
+                                                    microseconds=ssdt/10)
+        print(f'converted_ticks: {converted_ticks}')
+        snapshot['datetime'] = converted_ticks.strftime("%Y-%m-%d %H:%M:%S")
+        print(f'snapshot["datetime"]: {snapshot["datetime"]}')
+        return flask.render_template('snapshot.html', user=user,
+                                     snapshot=snapshot)
+
+    def get_user_snapshot_timeline(self, uid):
+        ''' Returns summary of the user's snapshots as an HTML '''
+        user = self.reader.get_user(uid)
+        if not user:
+            flask.abort(404)
+        snapshots = self.reader.get_snapshots_by_user(uid)
+        converted_ticks = datetime.datetime.fromtimestamp(user['birthday'])
+        user['birthday'] = converted_ticks.strftime("%Y-%m-%d")
+        return flask.render_template('timeline_data.html', user=user,
+                                     snapshots=snapshots)
+
+    def get_content_type_by_ext(self,path):
+        ''' Returns an HTTP content type based on the extension of a file '''
+        _, file_extension = os.path.splitext(path)
+
+        print(f' @@@ Debug trying to resolve mimetype for ext {file_extension}')
+
+        if(file_extension == '.jpg'):
+            return 'image/jpeg'
+        # Add more cases to support more formats
+
+        # Fallback if we did't find the right type
+        return 'application/octet-stream'
+
+    def get_result_data(self, result_name, snapshot_id):
+        results = self.reader.get_parser_res(result_name, snapshot_id)
+        if not results:
+            # Could not find specific result/snapshot
+            flask.abort(404)
+
+        res_dict = json.loads(results)
+        if 'data_path' not in res_dict:
+            # The specific result type does indicate raw data is available
+            flask.abort(404)
+
+        path = res_dict['data_path']
+        with open(path, 'rb') as f:
+            result_data = f.read()
+
+        content_type = self.get_content_type_by_ext(path)
+        return flask.Response(result_data, mimetype=content_type)
+
 
 
 @app.route('/')
 def get_home():
-    return serverInst.home()
+    return serverInst.get_home_page()
 
 
-@app.route('/main.css')
-def get_main_style():
-    return serverInst.main_style()
-
-
-@app.route('/logo.<ext>')
-def get_logo(ext):
-    return serverInst.logo_file(ext)
+@app.route('/static/<res_name>')
+def get_static_res(res_name):
+    return serverInst.get_static_res(res_name)
 
 
 @app.route('/users')
-def get_users():
-    return serverInst.users()
+def get_users_page():
+    return serverInst.get_users_page()
+
+
+@app.route('/users/<int:user_id>')
+def get_user_page(user_id):
+    return serverInst.get_user_page(user_id)
+
+
+@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>')
+def get_snapshot_page(user_id, snapshot_id):
+    return serverInst.get_snapshot_page(user_id, snapshot_id)
+
+
+@app.route('/users/<int:user_id>/timeline_data.html')
+def get_user_snapshot_timeline(user_id):
+    return serverInst.get_user_snapshot_timeline(user_id)
+
+
+@app.route(
+    '/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>/data',
+    methods=['GET'])
+def get_result_data(user_id, snapshot_id, result_name):
+    return serverInst.get_result_data(result_name, snapshot_id)
 
 
 @click.group()

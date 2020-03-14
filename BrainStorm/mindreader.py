@@ -111,6 +111,17 @@ class reader_v2:
         snap = SnapshotPb()
         snap.ParseFromString(buf)
 
+        # TODO: for exporting very slim mind files
+        # snap.color_image.height = 2
+        # snap.color_image.width = 2
+        # snap.color_image.data = b'\x00\x00\x00\x44\x44\x44\x77\x77\x77\xff\xff\xff'
+        # snap.depth_image.height = 2
+        # snap.depth_image.width = 2
+        # snap.depth_image.data[:] = [0.1, 0.2, 0.3, 0.4]
+
+        # newStr = snap.SerializeToString()
+        # print(newStr)
+
         col_img = snap.color_image
         col_img = image(col_img.height, col_img.width, col_img.data)
         dep_img = snap.depth_image

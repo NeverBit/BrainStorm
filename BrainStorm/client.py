@@ -12,7 +12,7 @@ from .mindreader import get_reader
 from .proto import Snapshot, UserInfo
 
 
-def make_minimal_snapshot_msg(snap, supported_fields):
+def trim_snapshot(snap, supported_fields):
     '''
     Makes a subset version of a snapshot - containing
     values only for the fields supported by the server
@@ -90,7 +90,7 @@ def upload_sample(host, port, path):
         snap = s_reader.read_snapshot()
         while snap is not None:
             print(' @@@ Debug got a snap')
-            snap_msg = make_minimal_snapshot_msg(snap, supported_fields)
+            snap_msg = trim_snapshot(snap, supported_fields)
             snapshot_dict = snap_msg.toDict()
             snapshot_bson = bson.dumps(snapshot_dict)
             headers = {'Content-type': 'application/bson'}

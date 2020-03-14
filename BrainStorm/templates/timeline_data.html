@@ -1,0 +1,38 @@
+<div class="table table-left">			
+	<section>
+	<h2 class="table-heading">Dogs at work</h2>			
+		<table class="data">
+		<caption>
+			<p>Snapshots gather from the user are listed below.<br/>
+				Use the arrow keys to the left or click a snapshot in the timeline to navigate.
+			</p>
+		</caption>
+			<thead>
+				<tr>
+					<th scope="col">Start</th>
+					<th scope="col">End</th>
+					<th scope="col">Event</th>
+					<th scope="col">Description</th>
+					<th scope="col">Link</th>
+					<th scope="col">Photo</th>
+					<th scope="col">Credit</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for id,snap in snapshots.items() %}
+				<tr>
+					<td>{{snap.datetime}}</td>
+					<td>{{snap.datetime + 50}}</td>
+					<td>Snapshot #{{id}}</td>
+					<td>Available Results: {{snap.available_results}}}.</td>
+					<td></td>
+					<td><img alt="#" src="/users/{{ user.id }}/snapshots/{{ id }}/color_image/data"></td>
+					<td>/users/{{ user.id }}/snapshots/{{ id }}</td>
+				</tr>
+				<a href="/users/{{ user.id }}/snapshots/{{ id }}">{{ snap }}</a>
+				{% endfor %}
+			</tbody>
+		</table>
+			
+	</section>
+</div>

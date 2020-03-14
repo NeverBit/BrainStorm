@@ -14,12 +14,12 @@ app = flask.Flask(__name__)
 readerInst = None
 
 
-@app.route('/users', methods=['GET'])
+@app.route('/users')
 def get_users_list():
     return readerInst.get_users()
 
 
-@app.route('/users/<int:user_id>', methods=['GET'])
+@app.route('/users/<int:user_id>')
 def get_user(user_id):
     user = readerInst.get_user(user_id)
     if user:
@@ -27,14 +27,14 @@ def get_user(user_id):
     flask.abort(404)
 
 
-@app.route('/users/<int:user_id>/snapshots', methods=['GET'])
+@app.route('/users/<int:user_id>/snapshots')
 def get_user_snapshots_list(user_id):
     if not readerInst.get_user(user_id):
         flask.abort(404)
     return readerInst.get_snapshots_by_user(user_id)
 
 
-@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>', methods=['GET'])
+@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>')
 def get_snapshot(user_id, snapshot_id):
     print('get_snapshot(user_id, snapshot_id):')
     snapshot = readerInst.get_snapshot(user_id, snapshot_id)

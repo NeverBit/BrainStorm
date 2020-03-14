@@ -70,9 +70,9 @@ class SnapshotsServer:
         datetime_path = user_path / f'{datetime}'
         datetime_path.mkdir(exist_ok=True)
         # Save images to filesystem
-        col_img_path = datetime_path / f'color_image.bin'
+        col_img_path = datetime_path / f'color_image.bson'
         self.save_image(col_img_path, snapshot.col_img)
-        dep_img_path = datetime_path / f'depth_image.bin'
+        dep_img_path = datetime_path / f'depth_image.bson'
         self.save_image(dep_img_path, snapshot.dep_img)
         print(f' @@@ DEBUG Saved images to {datetime_path}')
 
@@ -97,7 +97,7 @@ def client_hello():
     return serverInst.client_hello()
 
 
-@app.route('/config', methods=['GET'])
+@app.route('/config')
 def server_config():
     return serverInst.server_config()
 
