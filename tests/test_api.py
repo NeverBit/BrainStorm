@@ -104,3 +104,67 @@ def test_get_user__two_users__actual_uesrs_returned():
     assert res['id'] == user_id
     assert res2 != None
     assert res2['id'] == user_id +1
+
+
+def test_get_snaps_list__single_user_single_snap__actual_list_returned():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    dtime = 1122
+    parser_name = 'pose'
+    snap_id = saver.update_or_create_snapshot(user_id,dtime,parser_name)
+
+    # Act
+    res = api.get_user_snapshots_list(user_id)
+
+    # Assert
+    assert res != None
+    assert snap_id in res
+    assert res[snap_id]['uid'] == user_id
+    assert res[snap_id]['id'] == snap_id
+    assert res[snap_id]['datetime'] == dtime
+    assert parser_name in res[snap_id]['available_results']
+
+
+def test_get_snaps_list__single_user_multi_snaps__actual_list_returned():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    snap_id1 = saver.update_or_create_snapshot(user_id,1122,'pose')
+    snap_id2 = saver.update_or_create_snapshot(user_id,3344,'pose')
+
+    # Act
+    res = api.get_user_snapshots_list(user_id)
+
+    # Assert
+    assert res != None
+    assert snap_id1 in res
+    assert snap_id2 in res
+    assert res[snap_id2] != res[snap_id1]
+
+
+def test_get_snaps_list__no_such_user__raise_exception():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    snap_id1 = saver.update_or_create_snapshot(user_id,1122,'pose')
+    snap_id2 = saver.update_or_create_snapshot(user_id,3344,'pose')
+
+    # Act
+    with pytest.raises(Exception):
+        api.get_user_snapshots_list(999)
