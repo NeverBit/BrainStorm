@@ -1,0 +1,86 @@
+<!-- https://codepen.io/gabycampagna/pen/qajZBj -->
+<div class="json_view_wrapper_{{result_name}}">
+    <textarea id="json-input-{{result_name}}" autocomplete="off" style="display: none;">
+    {{res_json}}
+    </textarea>
+    <pre id="json-renderer-{{result_name}}"></pre>
+</div>
+<style>
+    .json_view_wrapper_{{result_name}} {
+      background-color: #EFEFEF;
+      color: #090909;
+      text-align: left;
+      margin: auto;
+      width: 90%;
+      display: inline-block;
+    }
+    pre{
+      padding-left: 30px;
+    }
+    
+    /* Syntax highlighting for JSON objects */
+    .json_view_wrapper_{{result_name}} ul.json-dict, ol.json-array {
+      list-style-type: none;
+      margin: 0 0 0 1px;
+      border-left: 1px dotted #ccc;
+      padding-left: 2em;
+    }
+    .json_view_wrapper_{{result_name}} .json-string {
+      color: rgb(31, 117, 21);
+    }
+    .json_view_wrapper_{{result_name}} .json-literal {
+      color: rgb(52, 32, 206);
+      font-weight: bold;
+    }
+    
+    /* Toggle button */
+    .json_view_wrapper_{{result_name}} a.json-toggle {
+      position: relative;
+      color: inherit;
+      text-decoration: none;
+    }
+    .json_view_wrapper_{{result_name}} a.json-toggle:focus {
+      outline: none;
+    }
+    .json_view_wrapper_{{result_name}} a.json-toggle:before {
+      color: #aaa;
+      content: "\25BC"; /* down arrow */
+      position: absolute;
+      display: inline-block;
+      width: 1em;
+      left: -1em;
+    }
+    .json_view_wrapper_{{result_name}} a.json-toggle.collapsed:before {
+      content: "\25B6"; /* left arrow */
+    }
+    
+    /* Collapsable placeholder links */
+    .json_view_wrapper_{{result_name}} a.json-placeholder {
+      color: #aaa;
+      padding: 0 1em;
+      text-decoration: none;
+    }
+    .json_view_wrapper_{{result_name}} a.json-placeholder:hover {
+      text-decoration: underline;
+    }
+    
+    .json_view_wrapper_{{result_name}} pre.modal  {
+      word-break: break-all;
+      word-wrap: break-word;
+      padding: 52px;
+    }
+    </style>    
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://www.jqueryscript.net/demo/jQuery-Plugin-For-Easily-Readable-JSON-Data-Viewer/json-viewer/jquery.json-viewer.js"></script>
+<script>
+create_json_view = function() {
+    try {
+        var input = eval('(' + $('#json-input-{{result_name}}').val() + ')');
+        $('#json-renderer-{{result_name}}').json_viewer(input);
+    }
+    catch (error) {
+        alert("Cannot eval JSON: " + error);
+    }
+}
+create_json_view();
+</script>

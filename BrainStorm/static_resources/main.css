@@ -124,3 +124,17 @@ input:-moz-placeholder {
 input::-webkit-input-placeholder {
 	color: #999;
 }
+
+
+.result_container{
+	margin: auto;
+	width: 80%;
+}
+.result_container img{
+	width: 100%; 
+	height: 100%;
+}
+.result_container div{
+	width: 100%; 
+	height: 100%;
+}

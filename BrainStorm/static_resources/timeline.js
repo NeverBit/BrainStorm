@@ -150,12 +150,7 @@ $.ajax({
 				var standfirst = item.innerText || item.textContent;
 				console.log(standfirst)
 
-				/* Hides the table and shows the SVG if javascript is enabled */
-				// $("h2:contains('Dogs at work')").parent("section").parent("div").css({"display":"none"});
-				// $("h2:contains('Dogs at work') + table").css({"width":"630px"});
-				// $(".outerwrapper span.timeline-heading").text(headline);
 				$(".outerwrapper p.timeline-standfirst").text(standfirst);
-				// $(".outerwrapper").css({"display":"block"});
 
 				/*	Push an object into the items array for each table row/point on the timeline */
 				for (var i = 0; i < $(table).length; i++) {
@@ -183,21 +178,21 @@ $.ajax({
 						
 
 						if ($(table).eq(i).children('td').eq(2).html() !== " ") {
-								items[i].headline = $(table).eq(i).children('td').eq(2).html();
+					 		items[i].headline = $(table).eq(i).children('td').eq(2).html();
 						}
 
 						if ($(table).eq(i).children('td').eq(3).html() !== " ") {
-								items[i].text = $(table).eq(i).children('td').eq(3).html();
+								items[i].text =  $(table).eq(i).children('td').eq(3).html();
 						}
 
-						if ($(table).eq(i).children('td').eq(4).html() !== " ") {
-								items[i].link = $(table).eq(i).children('td').eq(4).html();
-						}
+						// if ($(table).eq(i).children('td').eq(4).html() !== " ") {
+						// 		items[i].link = $(table).eq(i).children('td').eq(4).html();
+						// }
 
-						if ($(table).eq(i).children('td').eq(5).html() !== " ") {
-								items[i].img = $(table).eq(i).children('td').eq(5).html();
-								items[i].credit = $(table).eq(i).children('td').eq(6).html();
-						}
+						// if ($(table).eq(i).children('td').eq(5).html() !== " ") {
+						// 		items[i].img = $(table).eq(i).children('td').eq(5).html();
+						// 		items[i].credit = $(table).eq(i).children('td').eq(6).html();
+						// }
 				};
 				/*	Insert an .event div for each event */
 				for (var i = 0; i < items.length; i++) {
@@ -206,10 +201,10 @@ $.ajax({
 
 				for (var i = 0; i < $('.outerwrapper div[class^="event"]').length; i++) {
 
-						if (items[i].img) {
-								$('.outerwrapper div[class="event-' + i + '"]')
-										.append('<span class="timeline-img">' + items[i].img + '</span>');
-						}
+						// if (items[i].img) {
+						// 		$('.outerwrapper div[class="event-' + i + '"]')
+						// 				.append('<span class="timeline-img">' + items[i].img + '</span>');
+						// }
 
 						if (items[i].headline) {
 								$('.outerwrapper div[class="event-' + i + '"]')
@@ -231,7 +226,18 @@ $.ajax({
 
 						if (items[i].text) {
 								$('.outerwrapper div[class="event-' + i + '"]')
-										.append('<p>' + items[i].text + '</p>');
+										.append(items[i].text);
+
+								var iframe_selector = $('.info_box')
+								var iframe_selector = $('.outerwrapper div[class="event-' + i + '"] iframe')
+								var iframe = iframe_selector.get()
+
+								function pageY(elem) {
+									return elem.offsetParent ? (elem.offsetTop + pageY(elem.offsetParent)) : elem.offsetTop;
+								}
+
+								iframe_selector.height(455);
+								iframe_selector.width("100%");
 						}
 
 						if (items[i].link) {
@@ -274,7 +280,11 @@ $.ajax({
 						var miniHeight = 75;
 						var mainHeight = height - miniHeight - 50;
 
-						var zoom = 5;
+						var zoom = 1;
+						var snaps_count = $('.outerwrapper div[class^="event"]').length;
+						if(snaps_count > 10){
+							zoom = 5
+						}
 						var maxZoom = 10;
 						var zoomIncrement = 1;
 
@@ -715,9 +725,13 @@ $.ajax({
 										xDayAxis.ticks(d3.time.minutes, 1);
 								}
 								/* ticks for a second */
-								else if ((timeEnd - timeBegin) > 2000  ) {
+								else if ((timeEnd - timeBegin) > 1500  ) {
 										xMonthAxis.ticks(d3.time.seconds, 4).tickFormat(d3.time.format('%H:%M:%S'));
 										xDayAxis.ticks(d3.time.seconds, 1);
+								}
+								else if ((timeEnd - timeBegin) > 200  ) {
+										xMonthAxis.ticks(d3.time.Millisecond, 4).tickFormat(d3.time.format('%S.%L'));
+										xDayAxis.ticks(d3.time.Millisecond, 1);
 								}
 								/* ticks for half a second */
 								else {

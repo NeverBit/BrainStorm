@@ -8,6 +8,7 @@ import pika
 from .proto import Snapshot, SnapshotSlim, UserInfo
 import sys
 from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, and_
+import traceback
 
 
 app = flask.Flask(__name__)
@@ -47,7 +48,6 @@ def get_snapshot(user_id, snapshot_id):
     '/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>',
     methods=['GET'])
 def get_result(user_id, snapshot_id, result_name):
-    print('get_parser_res(...):')
     results = readerInst.get_parser_res(result_name, snapshot_id)
     if results:
         return results
@@ -72,7 +72,6 @@ def get_content_type_by_ext(path):
     '/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>/data',
     methods=['GET'])
 def get_result_data(user_id, snapshot_id, result_name):
-    print('get_parser_res(...) to extract data')
     results = readerInst.get_parser_res(result_name, snapshot_id)
     if not results:
         # Could not find specific result/snapshot
@@ -111,4 +110,6 @@ if __name__ == '__main__':
         main(prog_name='BrainStorm.api', obj={})
     except Exception as error:
         print(f'ERROR: {error}')
+        track = traceback.format_exc()
+        print(track)
         sys.exit(1)

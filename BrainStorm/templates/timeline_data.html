@@ -24,15 +24,13 @@
 					<td>{{snap.datetime}}</td>
 					<td>{{snap.datetime + 50}}</td>
 					<td>Snapshot #{{id}}</td>
-					<td>Available Results: {{snap.available_results}}}.</td>
-					<td></td>
-					<td><img alt="#" src="/users/{{ user.id }}/snapshots/{{ id }}/color_image/data"></td>
-					<td>/users/{{ user.id }}/snapshots/{{ id }}</td>
+					<td>
+						<iframe  src="/users/{{ user.id }}/snapshots/{{ id }}/raw" frameBorder="0"></iframe>
+					</td>
 				</tr>
 				<a href="/users/{{ user.id }}/snapshots/{{ id }}">{{ snap }}</a>
 				{% endfor %}
 			</tbody>
 		</table>
-			
 	</section>
 </div>

@@ -2,22 +2,23 @@ from furl import furl
 import re
 from .rabbitmq_conn import rabbitmq_conn
 
-# TODO: furl
-rmq_parser_regex = re.compile(r'rabbitmq://(\d+\.\d+\.\d+\.\d+):(\d+)/')
+mq_schemes_to_classes = { 'rabbitmq':rabbitmq_conn }
 
-
-def create_mq_connection(connection_string, topic):
+def create_mq_connection(connection_string, exchange):
     url = furl(connection_string)
     print(f' @@@ DEBUG Scheme: {url.scheme}')
-    if (url.scheme != 'rabbitmq'):
+    if (url.scheme not in mq_schemes_to_classes):
         raise ValueError(
             f'Unsupported scheme "{url.scheme}" for MQ connection string')
+    
+    mq_class = mq_schemes_to_classes[url.scheme]
+    
     host = url.host
     port = url.port
     if(port is None):
         raise ValueError(
             f'Port must be explicitly given in MQ connection string')
-    print(f'Found rabbit mq connection info: {host}:{port}')
-    conn = rabbitmq_conn(host, port, topic)
+    print(f'Found {url.scheme} mq connection info: {host}:{port} xchng: {exchange}')
+    conn = mq_class(host, port, exchange)
     print(f' @@@ Debug connection object {conn}')
     return conn

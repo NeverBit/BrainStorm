@@ -10,6 +10,7 @@ import time
 from .image import image
 from .mindreader import get_reader
 from .proto import Snapshot, UserInfo
+import traceback
 
 
 def trim_snapshot(snap, supported_fields):
@@ -37,9 +38,13 @@ def trim_snapshot(snap, supported_fields):
     if('depth_image' not in supported_fields):
         dep_img = image(0, 0, b'')
 
+    feel = {'hunger': feel.hunger,
+            'thirst': feel.thirst,
+            'exhaustion': feel.exhaustion,
+            'happiness': feel.happiness,
+            }
     if('feelings' not in supported_fields):
         feel = (0, 0, 0, 0)
-
     return Snapshot(uid, dtime, trans, rot, col_img, dep_img, feel)
 
 
@@ -115,4 +120,6 @@ if __name__ == '__main__':
         main(prog_name='BrainStorm.client', obj={})
     except Exception as error:
         print(f'ERROR: {error}')
+        track = traceback.format_exc()
+        print(track)
         sys.exit(1)

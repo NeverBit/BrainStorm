@@ -1,0 +1,28 @@
+<style>
+@import url('https://fonts.googleapis.com/css?family=Sen&display=swap');
+.result_container{
+	font-family: 'Sen', Arial, Helvetica Neue, Helvetica, sans-serif;
+	font-size: 20px;
+	text-align: center; 
+	margin: 0 auto;
+	width: 80%; 
+}
+.result_container img{
+	width: 100%; 
+}
+.result_container div{
+	width: 100%;
+}
+</style>
+<div id="content-container">
+{% for result_dict in results_htmls %}
+<div class="result_container">
+{{result_dict['result_name']}}
+{% if result_dict['is_raw']: %}
+(raw)
+{% endif%}
+:
+{{result_dict['result_html']|safe}}
+</div>
+{% endfor %}
+</div>

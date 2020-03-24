@@ -1,5 +1,5 @@
 import click
-from .db_access import DbBase
+from .db_access import Reader
 from .image import image
 import importlib
 import json
@@ -11,13 +11,16 @@ import pika
 from .proto import Snapshot, SnapshotSlim
 import sys
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, BigInteger, String, ForeignKey, and_
+import traceback
+
 
 parsers_names = list(parsers.registered_parsers.keys())
 
 
-class Saver(DbBase):
+class Saver(Reader):
+    ''' Saves brainstorm specific data pieces to a database '''
     def __init__(self, database_url):
-        DbBase.__init__(self, database_url)
+        Reader.__init__(self, database_url)
 
     def get_or_create_user_id(self, uid, name, bday, gender):
         '''
@@ -45,18 +48,6 @@ class Saver(DbBase):
         connection.close()
         return result.inserted_primary_key[0]
 
-    def get_snapshot(self, uid, datetime):
-        ''' Returns the row of the matching snapshot entry or None if not in DB '''
-        # Get current available_results
-        print(f" getting snapshot : {uid} - {datetime}")
-        query = self.snapshots_table.select().where(
-            and_(self.snapshots_table.c.uid == uid,
-                 self.snapshots_table.c.datetime == datetime))
-        connection = self.engine.connect()
-        match = connection.execute(query).fetchone()
-        print(f"Finished getting snapshot : {match}")
-        connection.close()
-        return match
 
     def update_or_create_snapshot(self, uid, datetime, new_available_result):
         '''
@@ -64,7 +55,7 @@ class Saver(DbBase):
         if not found, creates a new entry in the db.
         Returns the id of the existing/new db entry
         '''
-        match = self.get_snapshot(uid, datetime)
+        match = self.get_snapshot_by_time(uid, datetime)
         connection = self.engine.connect()
 
         # Build new array of 'parsed results'
@@ -97,17 +88,24 @@ class Saver(DbBase):
         connection.close()
         return res_id
 
-    def save_parser_res(self, parser_name, snapshotid, data):
+    def save_parser_res(self, parser_name, snapshot_id, data):
+        '''
+        Saves results of a parser (extracted from a specific snapshot)
+        to the database
+        '''
         insert = self.parsers_tables[parser_name].insert().values(
-            snapshotid=snapshotid, encoded_results=data)
+            snapshotid=snapshot_id, encoded_results=data)
         connection = self.engine.connect()
         res = connection.execute(insert)
-        print(f"Update Parser Res Snapshot : {res}")
+        print(f"Saving parser results. Snapshot ID: {snapshot_id}, Result Type: {parser_name}")
         print(f"Update Parser Res Snapshot ID : {res.inserted_primary_key}")
         connection.close()
         return res.inserted_primary_key[0]
 
     def save(self, content_name, saver_msg):
+        '''
+        Parses the 
+        '''
         user_info = saver_msg['user_info']
         uid = user_info['uid']
         self.get_or_create_user_id(uid,
@@ -193,4 +191,6 @@ if __name__ == '__main__':
     except Exception as error:
         print(error)
         print(f'ERROR: {error}')
+        track = traceback.format_exc()
+        print(track)
         sys.exit(1)

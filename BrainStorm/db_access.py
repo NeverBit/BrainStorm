@@ -80,33 +80,45 @@ class Reader(DbBase):
             and_(self.snapshots_table.c.uid == uid))
         connection = self.engine.connect()
         snaps = {}
-        for entry in connection.execute(query):
-            entryDict = dict(entry)
-            snaps[entryDict['id']] = entryDict
+        for snap_entry in connection.execute(query):
+            snap_entry_dict = dict(snap_entry)
+            snaps[snap_entry_dict['id']] = snap_entry_dict
         snaps = OrderedDict(sorted(snaps.items()))
         connection.close()
         return snaps
 
-    def get_snapshot(self, uid, snapshotid):
+    def get_snapshot(self, uid, snapshot_id):
         '''
         Returns the row of the matching snapshot entry or None if not in DB
         '''
         # Get current available_results
-        print(f" getting snapshot UID: {uid} , SNAP ID: {snapshotid}")
+        print(f" getting snapshot UID: {uid} , SNAP ID: {snapshot_id}")
         query = self.snapshots_table.select().where(
             and_(self.snapshots_table.c.uid == uid,
-                 self.snapshots_table.c.id == snapshotid))
+                 self.snapshots_table.c.id == snapshot_id))
         connection = self.engine.connect()
         match = connection.execute(query).fetchone()
         print(f"Finished getting snapshot : {match}")
         connection.close()
         return dict(match)
 
-    def get_parser_res(self, parser_name, snapshotid):
-        query = self.parsers_tables[parser_name].select().where(
-            and_(self.parsers_tables[parser_name].c.snapshotid == snapshotid))
+    def get_snapshot_by_time(self, uid, datetime):
+        ''' Returns the row of the matching snapshot entry or None if not in DB '''
+        # Get current available_results
+        print(f" getting snapshot : {uid} - {datetime}")
+        query = self.snapshots_table.select().where(
+            and_(self.snapshots_table.c.uid == uid,
+                 self.snapshots_table.c.datetime == datetime))
         connection = self.engine.connect()
         match = connection.execute(query).fetchone()
-        print(f"Finished getting parser res : {match}")
+        print(f"Finished getting snapshot : {match}")
+        connection.close()
+        return match
+
+    def get_parser_res(self, parser_name, snapshot_id):
+        query = self.parsers_tables[parser_name].select().where(
+            and_(self.parsers_tables[parser_name].c.snapshotid == snapshot_id))
+        connection = self.engine.connect()
+        match = connection.execute(query).fetchone()
         connection.close()
         return match.encoded_results

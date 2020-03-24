@@ -10,6 +10,7 @@ import pika
 from .proto import Snapshot
 from .proto import SnapshotSlim
 import sys
+import traceback
 
 
 registered_parsers = parsers_store.registered_parsers
@@ -67,18 +68,16 @@ def run_parser_once(name, input):
 def run_parser_service(name, connection_string):
     # Resolve parser name to function
     parse_func = registered_parsers[name]
+    print(f' @@@ Running parser "{name}" as a service')
 
     # Create MQ connection towards saver
-    print(f' @@@ Debug Creating MQ connection PARSERS')
     con_to_saver = mq.create_mq_connection(connection_string, 'parsers')
 
     # Define parse & publish callback
     def callback(channel, method, properties, body):
         snapshot = SnapshotSlim.fromDict(json.loads(body))
         res_path = Path('resources')
-        print('Trying to create resources dir')
         res_path.mkdir(exist_ok=True)
-        print('Created(?) resources dir')
         context = parser_context(res_path)
         parser_results = parse_func(context, snapshot)
         # Wrap the parer results in a unified format for the server
@@ -113,4 +112,6 @@ if __name__ == '__main__':
     except Exception as error:
         print(error)
         print(f'ERROR: {error}')
+        track = traceback.format_exc()
+        print(track)
         sys.exit(1)

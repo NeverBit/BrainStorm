@@ -19,4 +19,16 @@
 	Available Results: {{snapshot.available_results}}</br>
 	</p>
 </div>
+
+{% for result_dict in results_htmls %}
+<div class="result_container">
+{{result_dict['result_name']}}
+{% if result_dict['is_raw']: %}
+(raw)
+{% endif%}
+:
+{{result_dict['result_html']|safe}}
+</div>
+{% endfor %}
+
 {% endblock %}

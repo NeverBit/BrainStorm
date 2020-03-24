@@ -1,0 +1,54 @@
+<!-- Filename : index.html -->
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <title>Center an Iframe</title> 
+	
+	<link rel="stylesheet" href="main.css">
+  </head>
+  <body>
+	<div id="header">
+		<iframe src="logo.html" frameBorder="0" ></iframe>
+		<a id="iframeOverlay" href="/" title="Home"></a>
+	</div>
+	<div id="content-container">
+		<div id="nav-bar">
+			<a  href="/">Home</a>
+		</div>
+		
+		<!-- Home specific content -->
+		<p>
+		Welcome to BrainStorm Web Interface!<br>
+		Choose your way to navigate
+		</p>
+		<table id="nav-table">
+			<tr>
+				<td>View all users</td>
+				<td>Jump to user</td>
+			</tr>
+			<tr>
+				<td>
+					<button type="button" onclick="window.location.href='/users'">Browse</button>
+				</td>
+				<td>
+					<input type="text" id="uid" name="uid" maxlength="4" size="4" placeholder="User ID">
+					<script>
+						function goToUser() {
+						var uidNum=parseInt(document.getElementById('uid').value)
+						if(isNaN(uidNum)) {
+							alert("User ID must be a number.");
+							return
+						}
+						window.location.href='/user/'+uidNum;
+						}
+					</script>
+					<button type="button" onclick="goToUser()">Go</button>
+				</td>
+			</tr>
+		</table>
+		<!-- Home specific content -->
+		
+	</div>
+	<div id='credit'>by Shai Shapira</div>
+  </body>
+</html> 

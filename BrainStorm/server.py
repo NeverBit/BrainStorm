@@ -12,6 +12,7 @@ import threading
 from . import mq
 from .proto import Snapshot, SnapshotSlim, UserInfo
 from . import parsers
+import traceback
 
 
 app = flask.Flask(__name__)
@@ -148,4 +149,6 @@ if __name__ == '__main__':
         main(prog_name='BrainStorm.server', obj={})
     except Exception as error:
         print(f'ERROR: {error}')
+        track = traceback.format_exc()
+        print(track)
         sys.exit(1)
