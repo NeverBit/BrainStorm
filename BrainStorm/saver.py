@@ -58,21 +58,20 @@ class Saver(Reader):
         match = self.get_snapshot_by_time(uid, datetime)
         connection = self.engine.connect()
 
-        # Build new array of 'parsed results'
-        available_results = []
-        if match:  # Get previous results from match
-            available_results = json.loads(match.available_results)
-        # Add current new result
-        if new_available_result not in available_results:
-            available_results.append(new_available_result)
-        print(f'NEW existing available_results: {available_results}')
-        avail_res_json = json.dumps(available_results)
-
         # Execute an UPDATE or INSERT based on whether we found an entry for
         # the snapshot
         if match:
             # Snapshot already in DB, need an UPDATE
             print('UPDATING existing snapshot')
+            # Get previous results from match
+            available_results = json.loads(match.available_results)
+            # Add current new result if needed
+            if new_available_result not in available_results:
+                available_results.append(new_available_result)
+            # Build new array of 'parsed results'
+            avail_res_json = json.dumps(available_results)
+
+            # Create and run db UPDATE command
             update = self.snapshots_table.update()
             update = update.values(available_results=avail_res_json)
             update = update.where(self.snapshots_table.c.id == match.id)
@@ -80,6 +79,7 @@ class Saver(Reader):
             res_id = match.id
         else:
             # Snapshot not in DB, need an INSERT
+            avail_res_json = json.dumps([new_available_result])
             print('INSERTING new snapshot')
             insert = self.snapshots_table.insert().values(
                 uid=uid, datetime=datetime, available_results=avail_res_json)
@@ -97,14 +97,17 @@ class Saver(Reader):
             snapshotid=snapshot_id, encoded_results=data)
         connection = self.engine.connect()
         res = connection.execute(insert)
-        print(f"Saving parser results. Snapshot ID: {snapshot_id}, Result Type: {parser_name}")
-        print(f"Update Parser Res Snapshot ID : {res.inserted_primary_key}")
+        print(f"Saving parser res. snap ID: {snapshot_id}, Result Type: {parser_name}")
+        print(f"Updated Parser Res Snapshot ID : {res.inserted_primary_key}")
         connection.close()
         return res.inserted_primary_key[0]
 
     def save(self, content_name, saver_msg):
         '''
-        Parses the 
+        Handle a complete message for the saver:
+        Including a user id, snapshot id, and data from one of the parsers
+        The Saver asserts user & snapshot metadata exists (or created) in
+        the DB and than saves the parser's result
         '''
         user_info = saver_msg['user_info']
         uid = user_info['uid']
