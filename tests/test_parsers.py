@@ -40,6 +40,10 @@ def test_translation_parser_registered():
     assert 'pose' in parsers.registered_parsers
 
 
+def test_translation_parser_registered():
+    assert 'feelings' in parsers.registered_parsers
+
+
 def test_col_img_parser_registered():
     assert 'color_image' in parsers.registered_parsers
 
@@ -167,3 +171,30 @@ def test_translation_content(tmp_path):
     assert 'z' in retr_trans
     for k in retr_trans:
         assert math.isclose(retr_trans[k], translation[k])
+
+
+
+def test_translation_feelings(tmp_path):
+    my_dir = tmp_path / 'my_dir'
+    my_dir.mkdir()    
+    feel = {'hunger': 1.1,
+            'thirst': 2.2,
+            'exhaustion': 3.3,
+            'happiness': 4.4,
+            }
+
+    snap = SnapshotSlim(
+        TEST_USER_INFO,
+        TEST_DATE_TIME,
+        None,
+        None,
+        None,
+        None,
+        feel)
+    con = parser_context(my_dir)
+    res = parsers.registered_parsers['feelings'](con, snap)
+    j = json.loads(res)
+    assert 'hunger' in j
+    assert 'thirst' in j
+    assert 'exhaustion' in j
+    assert 'happiness' in j

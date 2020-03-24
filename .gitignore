@@ -110,3 +110,5 @@ data/
 resources/
 
 dumped.json
+
+dumped_pose.json
