@@ -1,3 +1,4 @@
+import json
 import pytest
 import BrainStorm.api as api
 from BrainStorm.db_access import Reader
@@ -168,3 +169,122 @@ def test_get_snaps_list__no_such_user__raise_exception():
     # Act
     with pytest.raises(Exception):
         api.get_user_snapshots_list(999)
+
+
+
+def test_get_snap__no_such_user__raise_exception():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    snap_id1 = saver.update_or_create_snapshot(user_id,1122,'pose')
+    snap_id2 = saver.update_or_create_snapshot(user_id,3344,'pose')
+
+    # Act
+    with pytest.raises(Exception):
+        api.get_snapshot(999,snap_id1)
+
+
+
+def test_get_snap__no_such_snap__raise_exception():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    snap_id1 = saver.update_or_create_snapshot(user_id,1122,'pose')
+    snap_id2 = saver.update_or_create_snapshot(user_id,3344,'pose')
+
+    # Act
+    with pytest.raises(Exception):
+        api.get_snapshot(user_id, 9900)
+
+
+def test_get_snap__valid_ids__snapshot_returned():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    snap_id1 = saver.update_or_create_snapshot(user_id,1122,'pose')
+    snap_id2 = saver.update_or_create_snapshot(user_id,3344,'pose')
+
+    # Act
+    snap = api.get_snapshot(user_id, snap_id1)
+
+    # Assert
+    assert snap != None
+    assert snap['id'] == snap_id1
+
+
+def test_get_parser_res__valid_ids__res_returned():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    parser_name = 'pose'
+    snap_id = saver.update_or_create_snapshot(user_id, 1122, parser_name)
+    content = "{'test':'tset'}"
+    saver.save_parser_res(parser_name, snap_id, content)
+
+    # Act
+    res = api.get_result(user_id, snap_id, parser_name)
+
+    # Assert
+    assert res != None
+    assert res == content
+
+
+def test_get_parser_res__invalid_snapshot_id__raise_exception():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    parser_name = 'pose'
+    snap_id = saver.update_or_create_snapshot(user_id, 1122, parser_name)
+    content = "{'test':'tset'}"
+    saver.save_parser_res(parser_name, snap_id, content)
+
+    # Act
+    with pytest.raises(Exception):
+        res = api.get_result(user_id, 9988, parser_name)
+
+
+
+def test_get_result_data__invalid_snapshot_id__raise_exception():
+    # Arrange
+    saver =  Saver('sqlite://')
+    api.readerInst = saver # hot-wiring the 'api' to our mock db
+    user_id = 13
+    uname = 'testy'
+    bday = 10101
+    gender = 'm'
+    saver.get_or_create_user_id(user_id, uname, bday, gender)
+    parser_name = 'pose'
+    snap_id = saver.update_or_create_snapshot(user_id, 1122, parser_name)
+    content = "{'test':'tset'}"
+    saver.save_parser_res(parser_name, snap_id, content)
+
+    # Act
+    with pytest.raises(Exception):
+        res = api.get_result_data(user_id, 9988, parser_name)
+
+
