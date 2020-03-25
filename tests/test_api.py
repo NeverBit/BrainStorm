@@ -288,3 +288,34 @@ def test_get_result_data__invalid_snapshot_id__raise_exception():
         res = api.get_result_data(user_id, 9988, parser_name)
 
 
+def test_get_content_type_by_ext__unexpected_ext__return_octet_str():
+    # Arrange
+    path = '/a/b/c/d.exe'
+
+    # Act
+    resolved_type = api.get_content_type_by_ext(path)
+
+    # Assert
+    assert resolved_type == 'application/octet-stream'
+
+
+def test_get_content_type_by_ext__jpg__return_img_jpeg():
+    # Arrange
+    path = '/a/b/c/d.jpg'
+
+    # Act
+    resolved_type = api.get_content_type_by_ext(path)
+
+    # Assert
+    assert resolved_type == 'image/jpeg'
+
+
+def test_get_content_type_by_ext__jpeg__return_img_jpeg():
+    # Arrange
+    path = '/a/b/c/d.jpeg'
+
+    # Act
+    resolved_type = api.get_content_type_by_ext(path)
+
+    # Assert
+    assert resolved_type == 'image/jpeg'

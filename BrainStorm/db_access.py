@@ -3,6 +3,7 @@ from .parsers import registered_parsers
 from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, and_
 import sqlalchemy
 
+
 parsers_names = list(registered_parsers.keys())
 
 

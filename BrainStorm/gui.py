@@ -36,7 +36,6 @@ class WebServer:
     def get_users_page(self):
         ''' Returns all users page '''
         users = self.reader.get_users()
-        users[99] = "Shappy"
         return flask.render_template('users.html', users=users)
 
     def get_user_page(self, uid):

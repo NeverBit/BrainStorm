@@ -57,7 +57,7 @@ def get_result(user_id, snapshot_id, result_name):
 def get_content_type_by_ext(path):
     ''' Returns an HTTP content type based on the extension of a file '''
     _, file_extension = os.path.splitext(path)
-    if(file_extension == '.jpg'):
+    if(file_extension == '.jpg' or file_extension == '.jpeg'):
         return 'image/jpeg'
     # Add more cases to support more formats
 

@@ -126,7 +126,6 @@ class Saver(Reader):
 
         parser_res = saver_msg['parser_res']
         self.save_parser_res(parser_name, snapid, parser_res)
-        pass
 
 
 @click.group()
