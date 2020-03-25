@@ -210,14 +210,12 @@ def get_user_page(user_id):
     return serverInst.get_user_page(user_id)
 
 
-@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>')
-def get_snapshot_page(user_id, snapshot_id):
+@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>', defaults={'requested_raw': False})
+@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>/raw', defaults={'requested_raw': True})
+def get_snapshot_page(user_id, snapshot_id, requested_raw):
+    if(requested_raw):
+        return serverInst.get_snapshot_content(user_id, snapshot_id)
     return serverInst.get_snapshot_page(user_id, snapshot_id)
-
-
-@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>/raw')
-def get_snapshot_content(user_id, snapshot_id):
-    return serverInst.get_snapshot_content(user_id, snapshot_id)
 
 
 @app.route('/users/<int:user_id>/timeline_data.html')

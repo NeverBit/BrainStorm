@@ -37,7 +37,6 @@ def get_user_snapshots_list(user_id):
 
 @app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>')
 def get_snapshot(user_id, snapshot_id):
-    print('get_snapshot(user_id, snapshot_id):')
     snapshot = readerInst.get_snapshot(user_id, snapshot_id)
     if snapshot:
         return snapshot

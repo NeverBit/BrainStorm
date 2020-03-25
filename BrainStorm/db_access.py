@@ -101,7 +101,9 @@ class Reader(DbBase):
         match = connection.execute(query).fetchone()
         print(f"Finished getting snapshot : {match}")
         connection.close()
-        return dict(match)
+        if match:
+            return dict(match)
+        return None
 
     def get_snapshot_by_time(self, uid, datetime):
         ''' Returns the row of the matching snapshot entry or None if not in DB '''
