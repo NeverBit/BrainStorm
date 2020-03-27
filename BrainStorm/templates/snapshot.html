@@ -3,9 +3,12 @@
 {% block title %}Snapshot {{snapshot.id}}{% endblock %}
 
 {% block nav_bar %}
-⯈ <a href="/users">Users</a>
-⯈ <a href="/users/{{ user.id }}">{{user.name}}</a>
-⯈ <a href="/users/{{ user.id }}/snapshots/{{ snapshot.id }}">Snapshot {{snapshot.id}}</a>
+<span style="font-size: 12px;">⯈ </span>
+<a href="/users">Users</a>
+<span style="font-size: 12px;">⯈ </span>
+<a href="/users/{{ user.id }}">{{user.name}}</a>
+<span style="font-size: 12px;">⯈ </span>
+<a href="/users/{{ user.id }}/snapshots/{{ snapshot.id }}">Snapshot {{snapshot.id}}</a>
 {% endblock %}
 
 {% block content %}
