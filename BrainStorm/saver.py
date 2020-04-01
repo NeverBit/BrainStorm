@@ -19,6 +19,7 @@ parsers_names = list(parsers.registered_parsers.keys())
 
 class Saver(Reader):
     ''' Saves brainstorm specific data pieces to a database '''
+
     def __init__(self, database_url):
         Reader.__init__(self, database_url)
 
@@ -47,7 +48,6 @@ class Saver(Reader):
         # TODO: Check results?
         connection.close()
         return result.inserted_primary_key[0]
-
 
     def update_or_create_snapshot(self, uid, datetime, new_available_result):
         '''
@@ -97,7 +97,8 @@ class Saver(Reader):
             snapshotid=snapshot_id, encoded_results=data)
         connection = self.engine.connect()
         res = connection.execute(insert)
-        print(f"Saving parser res. snap ID: {snapshot_id}, Result Type: {parser_name}")
+        print(
+            f"Saving parser res. snap ID: {snapshot_id}, Result Type: {parser_name}")
         print(f"Updated Parser Res Snapshot ID : {res.inserted_primary_key}")
         connection.close()
         return res.inserted_primary_key[0]

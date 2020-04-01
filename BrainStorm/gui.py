@@ -49,7 +49,7 @@ class WebServer:
         return flask.render_template('user.html', user=user,
                                      snapshots=snapshots)
 
-    def get_snapshot_parseres_results(self,uid, snapshot_id, available_results):
+    def get_snapshot_parseres_results(self, uid, snapshot_id, available_results):
         '''
         Returns a list of HTML components - one for every parser reasult
         available for the snashot
@@ -76,7 +76,7 @@ class WebServer:
             except jinja2.exceptions.TemplateNotFound:
                 # Catching this exceptions tells us a specific plugin does not exist.
                 # Because we still want to show the the result we use the
-                # default template (shows the result as a JSON) 
+                # default template (shows the result as a JSON)
                 result_html = flask.render_template('results_plugins/default.html',
                                                     user_id=uid,
                                                     snapshot_id=snapshot_id,
@@ -85,7 +85,8 @@ class WebServer:
                                                     res_dict=result_dict)
                 is_raw_results = True
             # Append to the output list
-            results_htmls.append({'result_name':result_name,'is_raw':is_raw_results,'result_html':result_html})
+            results_htmls.append(
+                {'result_name': result_name, 'is_raw': is_raw_results, 'result_html': result_html})
         return results_htmls
 
     def get_snapshot_content(self, uid, snapshot_id):
@@ -105,9 +106,9 @@ class WebServer:
         converted_ticks = datetime.datetime.fromtimestamp(dtime_ms/1000.0)
         snapshot['datetime'] = converted_ticks.strftime("%Y-%m-%d %H:%M:%S")
 
-        # Get available results names from the snapshot info 
+        # Get available results names from the snapshot info
         results = json.loads(snapshot['available_results'])
-        
+
         # Render HTML components for the different parsers' results
         results_htmls = self.get_snapshot_parseres_results(uid,
                                                            snapshot_id,
@@ -115,8 +116,7 @@ class WebServer:
         final_html = ''
         for res_dict in results_htmls:
             final_html += res_dict['result_html']
-        
-        
+
         return flask.render_template('snapshot_parsers_results.html',
                                      results_htmls=results_htmls)
 
@@ -137,9 +137,9 @@ class WebServer:
         converted_ticks = datetime.datetime.fromtimestamp(dtime_ms/1000.0)
         snapshot['datetime'] = converted_ticks.strftime("%Y-%m-%d %H:%M:%S")
 
-        # Get available results names from the snapshot info 
+        # Get available results names from the snapshot info
         results = json.loads(snapshot['available_results'])
-        
+
         # Render HTML components for the different parsers' results
         results_htmls = self.get_snapshot_parseres_results(uid,
                                                            snapshot_id,
@@ -159,15 +159,15 @@ class WebServer:
         user['birthday'] = converted_ticks.strftime("%Y-%m-%d")
 
         snapshots = self.reader.get_snapshots_by_user(uid)
-        for snapshot_id,snapshot in snapshots.items():
-            # Get available results names from the snapshot info 
+        for snapshot_id, snapshot in snapshots.items():
+            # Get available results names from the snapshot info
             results = json.loads(snapshot['available_results'])
-            
+
             # Render HTML components for the different parsers' results
             results_htmls = self.get_snapshot_parseres_results(uid,
-                                                            snapshot_id,
-                                                            results)
-            
+                                                               snapshot_id,
+                                                               results)
+
             # Expand snapshot object
             snapshot['results_htmls'] = results_htmls
 
@@ -187,7 +187,6 @@ class WebServer:
 
         path = res_dict['data_path']
         return flask.send_file(path)
-
 
 
 @app.route('/')
