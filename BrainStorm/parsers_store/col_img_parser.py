@@ -19,7 +19,7 @@ def parse_col_img(context, snapshot):
     save_path = context.get_storage_path(
     ) / f'{snapshot.user_info.uid}_{snapshot.datetime}_color_image.jpg'
     save_path = save_path.absolute()
-    
+
     pil_image.save(save_path)
     res_dict = {'data_path': str(save_path)}
     j = json.dumps(res_dict)
