@@ -106,7 +106,9 @@ class Reader(DbBase):
         return None
 
     def get_snapshot_by_time(self, uid, datetime):
-        ''' Returns the row of the matching snapshot entry or None if not in DB '''
+        '''
+        Returns the row of the matching snapshot entry or None if not in DB
+        '''
         # Get current available_results
         print(f" getting snapshot : {uid} - {datetime}")
         query = self.snapshots_table.select().where(

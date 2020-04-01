@@ -10,7 +10,8 @@ from pathlib import Path
 import pika
 from .proto import Snapshot, SnapshotSlim
 import sys
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, BigInteger, String, ForeignKey, and_
+from sqlalchemy import create_engine, MetaData, Table, Column
+from sqlalchemy import Integer, BigInteger, String, ForeignKey, and_
 import traceback
 
 
@@ -25,10 +26,11 @@ class Saver(Reader):
 
     def get_or_create_user_id(self, uid, name, bday, gender):
         '''
-        Tries to get the user id for a given user from the db. if not found, creates
-        a new entry in the db and return the new id
+        Tries to get the user id for a given user from the db. if not found,
+        creates a new entry in the db and return the new id
         '''
-        query = self.users_table.select().where(and_(self.users_table.c.id == uid))
+        query = self.users_table.select()
+        query = query.where(and_(self.users_table.c.id == uid))
         connection = self.engine.connect()
         found = connection.execute(query).fetchone() is not None
         print(f"Finished getting user : {found}")
@@ -43,8 +45,6 @@ class Saver(Reader):
                                                   gender=gender)
         connection = self.engine.connect()
         result = connection.execute(insert)
-        print(f"Finished saving user : {result}")
-        print(f"Finished saving user ID : {result.inserted_primary_key}")
         # TODO: Check results?
         connection.close()
         return result.inserted_primary_key[0]
@@ -97,9 +97,6 @@ class Saver(Reader):
             snapshotid=snapshot_id, encoded_results=data)
         connection = self.engine.connect()
         res = connection.execute(insert)
-        print(
-            f"Saving parser res. snap ID: {snapshot_id}, Result Type: {parser_name}")
-        print(f"Updated Parser Res Snapshot ID : {res.inserted_primary_key}")
         connection.close()
         return res.inserted_primary_key[0]
 
@@ -140,7 +137,8 @@ def main():
     '--database',
     type=str,
     default='postgres://postgres:pass@127.0.0.1:5432/postgres',
-    help='Connection string to db. Format: db_type://user:pass@host:port/database_name')
+    help=('Connection string to db.'
+          'Format: db_type://user:pass@host:port/database_name'))
 @click.argument('name', type=str)
 @click.argument('input', type=click.File('rb'))
 def run_saver_once(database, name, input):
@@ -165,7 +163,8 @@ def run_saver_once(database, name, input):
 @click.argument('mq_str', type=str, default='rabbitmq://127.0.0.1:5672/')
 def run_saver_service(database_str, mq_str):
     '''
-    Runs the saver as a service, reading from MQ_STR and writing to db at DATABASE_STR.
+    Runs the saver as a service, reading from MQ_STR and writing to
+    db at DATABASE_STR.
     MQ_STR format: mq_type://host:port/
     DATABASE_STR format: db_type://user:pass@host:port/database_name
     '''

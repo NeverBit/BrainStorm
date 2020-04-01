@@ -44,9 +44,12 @@ class Snapshot:
 
     def __repr__(self):
         return (
-            f'<Snapshot; Time: {self.datetime}, Trans: {self.pose.translation}, '
-            f'Rot: {self.pose.rotation}, Col Img: {self.col_img.height}x{self.col_img.width}, '
-            f'Dep Img: {self.dep_img.height}x{self.dep_img.width}, Feels: {self.feelings}')
+            f'<Snapshot; Time: {self.datetime}, '
+            f'Trans: {self.pose.translation}, '
+            f'Rot: {self.pose.rotation}, '
+            f'Col Img: {self.col_img.height}x{self.col_img.width}, '
+            f'Dep Img: {self.dep_img.height}x{self.dep_img.width}, '
+            f'Feels: {self.feelings}')
 
     @classmethod
     def fromDict(cls, d):
@@ -76,7 +79,9 @@ class UserInfo:
 
     def __repr__(self):
         return (
-            f'<UserInfo; Id: {self.uid}, Name: {self.name}, Birthday: {self.bday}, '
+            f'<UserInfo; Id: {self.uid}, '
+            f'Name: {self.name}, '
+            f'Birthday: {self.bday}, '
             f'Gender: {self.gender}>')
 
     @classmethod
@@ -124,7 +129,8 @@ class SnapshotSlim:
 
     def __repr__(self):
         return (
-            f'<SnapshotSlim; user_info: {self.user_info}, Time: {self.datetime}, Trans: {self.pose.translation}, '
+            f'<SnapshotSlim; user_info: {self.user_info}, '
+            f'Time: {self.datetime}, Trans: {self.pose.translation}, '
             f'Rot: {self.pose.rotation}, Col Img Path: {self.col_img_path}, '
             f'Dep Img Path: {self.dep_img_path}, Feels: {self.feelings}>')
 

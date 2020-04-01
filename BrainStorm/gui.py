@@ -76,7 +76,8 @@ class WebServer:
                                                     res_dict=result_dict)
                 is_raw_results = False
             except jinja2.exceptions.TemplateNotFound:
-                # Catching this exceptions tells us a specific plugin does not exist.
+                # Catching this exceptions tells us a specific plugin
+                # does not exist.
                 # Because we still want to show the the result we use the
                 # default template (shows the result as a JSON)
                 result_html = flask.render_template(
@@ -89,7 +90,9 @@ class WebServer:
                 is_raw_results = True
             # Append to the output list
             results_htmls.append(
-                {'result_name': result_name, 'is_raw': is_raw_results, 'result_html': result_html})
+                {'result_name': result_name,
+                 'is_raw': is_raw_results,
+                 'result_html': result_html})
         return results_htmls
 
     def get_snapshot_content(self, uid, snapshot_id):

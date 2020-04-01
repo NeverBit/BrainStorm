@@ -36,8 +36,10 @@ class reader_v1:
         data = self.file.read(64)
         if (data == b''):
             return None
-        time, trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, rot_w = struct.unpack(
-            'Qddddddd', data)
+        time, trans_x, trans_y, trans_z, = struct.unpack(
+            'Qddd', data[:32])
+        rot_x, rot_y, rot_z, rot_w = struct.unpack(
+            'dddd', data[32:])
         translation = {'x': trans_x, 'y': trans_y, 'z': trans_z}
         rotation = {'x': rot_x, 'y': rot_y, 'z': rot_z, 'w': rot_w}
         # Color Image
@@ -114,7 +116,8 @@ class reader_v2:
         # TODO: for exporting very slim mind files
         # snap.color_image.height = 2
         # snap.color_image.width = 2
-        # snap.color_image.data = b'\x00\x00\x00\x44\x44\x44\x77\x77\x77\xff\xff\xff'
+        # snap.color_image.data =
+        # b'\x00\x00\x00\x44\x44\x44\x77\x77\x77\xff\xff\xff'
         # snap.depth_image.height = 2
         # snap.depth_image.width = 2
         # snap.depth_image.data[:] = [0.1, 0.2, 0.3, 0.4]
