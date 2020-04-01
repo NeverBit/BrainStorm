@@ -49,7 +49,8 @@ class WebServer:
         return flask.render_template('user.html', user=user,
                                      snapshots=snapshots)
 
-    def get_snapshot_parseres_results(self, uid, snapshot_id, available_results):
+    def get_snapshot_parseres_results(
+            self, uid, snapshot_id, available_results):
         '''
         Returns a list of HTML components - one for every parser reasult
         available for the snashot
@@ -65,7 +66,8 @@ class WebServer:
 
             # Render the parser result HTML component
             try:
-                # Assuming the parser have a specified generator 'plugin' template
+                # Assuming the parser have a specified generator 'plugin'
+                # template
                 result_html = flask.render_template(plugin_templat_path,
                                                     user_id=uid,
                                                     snapshot_id=snapshot_id,
@@ -103,7 +105,7 @@ class WebServer:
 
         # Parser datetime to humand-readable format
         dtime_ms = snapshot['datetime']
-        converted_ticks = datetime.datetime.fromtimestamp(dtime_ms/1000.0)
+        converted_ticks = datetime.datetime.fromtimestamp(dtime_ms / 1000.0)
         snapshot['datetime'] = converted_ticks.strftime("%Y-%m-%d %H:%M:%S")
 
         # Get available results names from the snapshot info
@@ -134,7 +136,7 @@ class WebServer:
 
         # Parser datetime to humand-readable format
         dtime_ms = snapshot['datetime']
-        converted_ticks = datetime.datetime.fromtimestamp(dtime_ms/1000.0)
+        converted_ticks = datetime.datetime.fromtimestamp(dtime_ms / 1000.0)
         snapshot['datetime'] = converted_ticks.strftime("%Y-%m-%d %H:%M:%S")
 
         # Get available results names from the snapshot info
@@ -209,8 +211,10 @@ def get_user_page(user_id):
     return serverInst.get_user_page(user_id)
 
 
-@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>', defaults={'requested_raw': False})
-@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>/raw', defaults={'requested_raw': True})
+@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>',
+           defaults={'requested_raw': False})
+@app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>/raw',
+           defaults={'requested_raw': True})
 def get_snapshot_page(user_id, snapshot_id, requested_raw):
     if(requested_raw):
         return serverInst.get_snapshot_content(user_id, snapshot_id)
