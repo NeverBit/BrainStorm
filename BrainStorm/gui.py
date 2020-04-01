@@ -79,12 +79,13 @@ class WebServer:
                 # Catching this exceptions tells us a specific plugin does not exist.
                 # Because we still want to show the the result we use the
                 # default template (shows the result as a JSON)
-                result_html = flask.render_template('results_plugins/default.html',
-                                                    user_id=uid,
-                                                    snapshot_id=snapshot_id,
-                                                    result_name=result_name,
-                                                    res_json=result_json,
-                                                    res_dict=result_dict)
+                result_html = flask.render_template(
+                    'results_plugins/default.html',
+                    user_id=uid,
+                    snapshot_id=snapshot_id,
+                    result_name=result_name,
+                    res_json=result_json,
+                    res_dict=result_dict)
                 is_raw_results = True
             # Append to the output list
             results_htmls.append(
