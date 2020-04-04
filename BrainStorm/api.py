@@ -4,10 +4,7 @@ import flask
 import json
 import os
 from pathlib import Path
-import pika
-from .proto import Snapshot, SnapshotSlim, UserInfo
 import sys
-from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, and_
 import traceback
 
 
@@ -32,7 +29,12 @@ def get_user(user_id):
 def get_user_snapshots_list(user_id):
     if not readerInst.get_user(user_id):
         flask.abort(404)
-    return readerInst.get_snapshots_by_user(user_id)
+    snaps = readerInst.get_snapshots_by_user(user_id)
+    dt_only_snaps = {}
+    for snap_id in snaps:
+        dt = snaps[snap_id]['datetime']
+        dt_only_snaps[snap_id] = {'datetime': dt}
+    return dt_only_snaps
 
 
 @app.route('/users/<int:user_id>/snapshots/<int:snapshot_id>')

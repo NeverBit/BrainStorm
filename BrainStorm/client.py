@@ -68,7 +68,6 @@ def upload_sample(host, port, path):
     else:
         file = open(path, 'rb')
 
-    print(f'basak {type(host)} {type(port)}')
     base_url = f'http://{host}:{port}'
     print(' @@@ Debug before reader start ')
     reader_class = get_reader(versionNum=2)
