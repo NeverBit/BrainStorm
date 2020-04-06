@@ -1,3 +1,13 @@
+# Check if we need sudo for docker
+docker ps
+if [ $? -eq 0 ]
+then
+  echo "Permission sufficent to call docker"
+else
+  echo "Insufficent permission for docker. Try running with sudo" >&2
+  exit
+fi
+
 # Build images
 docker build --tag bs_base -f deploy/Dockerfile.bs_base .
 docker build --tag bs_api -f deploy/Dockerfile.api .
