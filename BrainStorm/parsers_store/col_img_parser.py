@@ -1,6 +1,4 @@
-import bson
 import json
-from pathlib import Path
 from PIL import Image as PIL
 
 

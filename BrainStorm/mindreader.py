@@ -1,4 +1,3 @@
-import datetime as dt
 import struct
 from .image import image
 from .proto import Snapshot
@@ -6,14 +5,24 @@ from .cortex_pb2 import User as UserPb
 from .cortex_pb2 import Snapshot as SnapshotPb
 
 
+# Store of supported readers,
+# accessible by the version number
 readersStore = {}
 
 
 def get_reader(versionNum):
+    '''
+    Get a .mind file reader for a specific
+    format version number
+    '''
     return readersStore[versionNum]
 
 
 def reader(versionNum):
+    '''
+    A wrapper to allow automatic registeration
+    of different .mind reader classes
+    '''
     def wrapper(clss):
         readersStore[versionNum] = clss
         return clss

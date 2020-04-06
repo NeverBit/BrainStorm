@@ -1,17 +1,10 @@
 import click
 from .db_access import Reader
-from .image import image
-import importlib
 import json
 from . import mq
-from . import parsers_store
 from . import parsers
-from pathlib import Path
-import pika
-from .proto import Snapshot, SnapshotSlim
 import sys
-from sqlalchemy import create_engine, MetaData, Table, Column
-from sqlalchemy import Integer, BigInteger, String, ForeignKey, and_
+from sqlalchemy import and_
 import traceback
 
 

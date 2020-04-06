@@ -1,5 +1,4 @@
 from furl import furl
-import re
 from .rabbitmq_conn import rabbitmq_conn
 
 

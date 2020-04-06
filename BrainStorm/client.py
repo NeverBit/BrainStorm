@@ -2,11 +2,8 @@ import bson
 import click
 import gzip
 import json
-from pathlib import Path
 import requests
-import struct
 import sys
-import time
 from .image import image
 from .mindreader import get_reader
 from .proto import Snapshot, UserInfo

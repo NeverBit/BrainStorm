@@ -3,7 +3,6 @@ from .db_access import Reader
 import flask
 import json
 import os
-from pathlib import Path
 import sys
 import traceback
 

@@ -1,7 +1,4 @@
 from collections import namedtuple
-import io
-import json
-import struct
 from . import image as im
 
 

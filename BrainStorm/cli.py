@@ -1,7 +1,6 @@
 import click
 import datetime as dt
 import json
-import os
 import requests
 import sys
 import traceback

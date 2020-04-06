@@ -1,8 +1,6 @@
-import bson
 import json
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
 
 
 def parse_dep_img(context, snapshot):

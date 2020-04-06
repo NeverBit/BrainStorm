@@ -4,10 +4,7 @@ import click
 import flask
 import json
 from pathlib import Path
-import pika
-import struct
 import sys
-import time
 import threading
 from . import mq
 from .proto import Snapshot, SnapshotSlim, UserInfo

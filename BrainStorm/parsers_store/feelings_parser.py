@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 
 def parse_feelings(context, snapshot):

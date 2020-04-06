@@ -1,13 +1,10 @@
 import bson
 import click
 from .image import image
-import importlib
 import json
 from . import mq
 from . import parsers_store
 from pathlib import Path
-import pika
-from .proto import Snapshot
 from .proto import SnapshotSlim
 import sys
 import traceback
