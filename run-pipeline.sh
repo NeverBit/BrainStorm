@@ -11,9 +11,8 @@ docker container kill $(docker ps -q -f "name=bs_")
 
 # Create docker infrastructure - virtual network and local volumes
 docker network create bsnetwork
-mkdir /tmp/brainstorm
-mkdir /tmp/brainstorm/data
-mkdir /tmp/brainstorm/resources
+mkdir -p /tmp/brainstorm/data
+mkdir -p /tmp/brainstorm/resources
 
 # 3rd party containers - MQ and DB
 docker run -d --rm --name bs_postgres_host --network=bsnetwork -p 5432:5432 -e POSTGRES_PASSWORD=1234 postgres;
