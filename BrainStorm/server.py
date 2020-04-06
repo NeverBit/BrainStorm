@@ -112,7 +112,7 @@ def run_server(host, port, publish, data_dir='data'):
     print(f' @@@ Debug run-server and serverInst is {serverInst}')
 
     # let flask take the reins
-    app.run(debug=True, host="0.0.0.0", port=port, threaded=True)
+    app.run(host=host, port=port, threaded=True)
 
 
 @click.group()
