@@ -62,7 +62,10 @@ def run_parser_service(name, connection_string):
     parse_func = registered_parsers[name]
 
     # Create MQ connection towards saver
-    con_to_saver = mq.create_mq_connection(connection_string, 'parsers')
+    try:
+        con_to_saver = mq.create_mq_connection(connection_string, 'parsers')
+    except Exception as e:
+        raise Exception('Failed to connect to MQ. Cannot proceed.')
 
     # Define parse & publish callback
     def callback(channel, method, properties, body):
@@ -84,17 +87,22 @@ def run_parser_service(name, connection_string):
         con_to_saver.close()
 
     # Consume input mq
-    con_to_input = mq.create_mq_connection(connection_string, 'input')
-    con_to_input.open()
-    con_to_input.start_consume(callback)
+    
+    try:
+        con_to_input = mq.create_mq_connection(connection_string, 'input')
+    except Exception as e:
+        raise Exception('Failed to connect to MQ. Cannot proceed.')
+    
+    try:
+        con_to_input.open()
+        con_to_input.start_consume(callback)
+    except Exception as e:
+        raise Exception('MQ error occurred when consuming input queue. Cannot proceed')
 
 
 if __name__ == '__main__':
     try:
         main(prog_name='BrainStorm.parsers', obj={})
     except Exception as error:
-        print(error)
         print(f'ERROR: {error}')
-        track = traceback.format_exc()
-        print(track)
         sys.exit(1)

@@ -184,8 +184,5 @@ if __name__ == '__main__':
     try:
         main(prog_name='BrainStorm.saver', obj={})
     except Exception as error:
-        print(error)
         print(f'ERROR: {error}')
-        track = traceback.format_exc()
-        print(track)
         sys.exit(1)

@@ -1,4 +1,5 @@
 import threading
+import time
 import pika
 
 
@@ -7,25 +8,21 @@ class rabbitmq_conn:
         self.host = host
         self.port = port
         self.exchange = exchange
-        # Make sure the mq is accessible
-        while True:
-            try:
-                print('Trying MQ...')
-                self.open()
-                self.close()
-                break
-            except Exception:
-                continue
 
     def open(self):
-        # Create connection to MQ
-        print(f'@@@ DEBUG Trying to open connection towards host={self.host} port={self.port}')
-        params = pika.ConnectionParameters(self.host, self.port)
-        self.connection = pika.BlockingConnection(params)
-        self.channel = self.connection.channel()
-        self.channel.basic_qos(prefetch_count=1)
-        self.channel.exchange_declare(exchange=self.exchange,
-                                      exchange_type='topic')
+        # Create connection to MQ (try multiple times)
+        for i in range(100):
+            try:
+                params = pika.ConnectionParameters(self.host, self.port)
+                self.connection = pika.BlockingConnection(params)
+                self.channel = self.connection.channel()
+                self.channel.basic_qos(prefetch_count=1)
+                self.channel.exchange_declare(exchange=self.exchange,
+                                              exchange_type='topic')
+                break
+            except Exception:
+                time.sleep(1)
+                continue
 
     def close(self):
         self.connection.close()
