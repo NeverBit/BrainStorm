@@ -10,6 +10,7 @@ class rabbitmq_conn:
 
     def open(self):
         # Create connection to MQ
+        print(f'@@@ DEBUG Trying to open connection towards host={self.host} port={self.port}')
         params = pika.ConnectionParameters(self.host, self.port)
         self.connection = pika.BlockingConnection(params)
         self.channel = self.connection.channel()

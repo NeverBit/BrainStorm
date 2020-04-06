@@ -1,5 +1,5 @@
 # Check if we need sudo for docker
-docker ps
+docker ps >/dev/null 2>/dev/null
 if [ $? -eq 0 ]
 then
   echo "Permission sufficent to call docker"
@@ -32,8 +32,8 @@ docker run -d -it --name bs_rabbit_host --network=bsnetwork -p 5672:5672 -p 1567
 
 # BrainStorm components
 docker run -d -v $DATA_DIR:$DATA_DIR --name bs_server_host --network=bsnetwork -p 8000:8000 bs_server
-docker run -d --name bs_saver_host --network=bsnetwork -d bs_saver
-docker run -d --name bs_api_host --network=bsnetwork -d -p 5000:5000 bs_api
+docker run -d --name bs_saver_host --network=bsnetwork bs_saver
+docker run -d --name bs_api_host --network=bsnetwork -p 5000:5000 bs_api
 docker run -d -v $RES_DIR:$RES_DIR --name bs_gui_host --network=bsnetwork -p 8080:8080 bs_gui
 # BrainStorm parsers
 docker run -d -v $DATA_DIR:$DATA_DIR -v $RES_DIR:$RES_DIR --network=bsnetwork --name bs_parse_col_img_host -e parser_name=color_image bs_parser
