@@ -5,6 +5,7 @@ import sys
 
 registered_parsers = {}
 
+
 root = globals()['__file__']
 root = pathlib.Path(root).absolute()
 root = root.parent

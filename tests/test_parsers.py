@@ -3,7 +3,7 @@ import json
 import math
 import os
 from pathlib import Path
-from BrainStorm import image as im
+from BrainStorm import image
 from BrainStorm import parsers
 from BrainStorm.proto import Snapshot, SnapshotSlim, UserInfo
 
@@ -55,10 +55,10 @@ def test_dep_img_parser_registered():
 def test__color_image__write(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
-    img = im.image(2, 2, (b'\xff\x00\x00'
-                          b'\x00\xff\x00'
-                          b'\x20\x20\x00'
-                          b'\x80\x80\xff'))
+    img = image(2, 2, (b'\xff\x00\x00'
+                       b'\x00\xff\x00'
+                       b'\x20\x20\x00'
+                       b'\x80\x80\xff'))
     img_path = my_dir / 'image.bin'
 
     snap = SnapshotSlim(
@@ -82,7 +82,7 @@ def test__color_image__write(tmp_path):
 def test__depth_image__write(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
-    img = im.image(2, 2, [0.0, 1.0, 1.0, 0.0])
+    img = image(2, 2, [0.0, 1.0, 1.0, 0.0])
     img_path = my_dir / 'image.bin'
 
     snap = SnapshotSlim(
@@ -106,10 +106,10 @@ def test__depth_image__write(tmp_path):
 def test__color_image__get_encoded_image_called(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
-    img = im.image(2, 2, (b'\xff\x00\x00'
-                          b'\x00\xff\x00'
-                          b'\x20\x20\x00'
-                          b'\x80\x80\xff'))
+    img = image(2, 2, (b'\xff\x00\x00'
+                       b'\x00\xff\x00'
+                       b'\x20\x20\x00'
+                       b'\x80\x80\xff'))
     img_path = my_dir / 'image.bin'
 
     snap = SnapshotSlim(
@@ -130,7 +130,7 @@ def test__color_image__get_encoded_image_called(tmp_path):
 def test__depth_image__get_encoded_image_called(tmp_path):
     my_dir = tmp_path / 'my_dir'
     my_dir.mkdir()
-    img = im.image(2, 2, [0.0, 1.0, 1.0, 0.0])
+    img = image(2, 2, [0.0, 1.0, 1.0, 0.0])
     img_path = my_dir / 'image.bin'
 
     snap = SnapshotSlim(
@@ -173,10 +173,9 @@ def test_translation_content(tmp_path):
         assert math.isclose(retr_trans[k], translation[k])
 
 
-
 def test_translation_feelings(tmp_path):
     my_dir = tmp_path / 'my_dir'
-    my_dir.mkdir()    
+    my_dir.mkdir()
     feel = {'hunger': 1.1,
             'thirst': 2.2,
             'exhaustion': 3.3,

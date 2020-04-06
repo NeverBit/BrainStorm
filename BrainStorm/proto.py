@@ -1,5 +1,5 @@
 from collections import namedtuple
-from . import image as im
+from .image import image
 
 
 Pose = namedtuple('Pose', ('translation', 'rotation'))
@@ -54,8 +54,8 @@ class Snapshot:
         ts = d['datetime']
         trans = d['pose']['translation']
         rot = d['pose']['rotation']
-        col_img = im.image.fromDict(d['color_image'])
-        dep_img = im.image.fromDict(d['depth_image'])
+        col_img = image.fromDict(d['color_image'])
+        dep_img = image.fromDict(d['depth_image'])
         fee = d['feelings']
         return cls(uid, ts, trans, rot, col_img, dep_img, fee)
 

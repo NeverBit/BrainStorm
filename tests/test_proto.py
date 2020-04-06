@@ -1,6 +1,6 @@
 import struct
 from BrainStorm import proto
-from BrainStorm import image as im
+from BrainStorm import image
 
 
 TEST_USER_INFO = proto.UserInfo(42, 'Name Name', 10101, 'm')
@@ -8,8 +8,8 @@ TEST_DATE_TIME = 2
 
 
 def test_snapshot_ser_des():
-    col_img = im.image(2, 2, b'\xff\x00\x00' * 4)
-    dep_img = im.image(1, 1, struct.pack('!f', 0.75))
+    col_img = image(2, 2, b'\xff\x00\x00' * 4)
+    dep_img = image(1, 1, struct.pack('!f', 0.75))
     trans = {'x': 1.1, 'y': 2.2, 'z': 3.3}
     rot = {'x': 1.1, 'y': 2.2, 'z': 3.3, 'w': 4.4}
     feel = (1.0, 0.0, -1.0, 1.0)
@@ -26,8 +26,8 @@ def test_snapshot_ser_des():
 
 
 def test_snapshot_ser_des_with_nones():
-    col_img = im.image(2, 2, b'\xff\x00\x00' * 4)
-    dep_img = im.image(1, 1, struct.pack('!f', 0.75))
+    col_img = image(2, 2, b'\xff\x00\x00' * 4)
+    dep_img = image(1, 1, struct.pack('!f', 0.75))
     trans = None
     rot = None
     feel = None

@@ -3,14 +3,11 @@ import click
 from .image import image
 import json
 from . import mq
-from . import parsers_store
+from .parsers_store import registered_parsers
 from pathlib import Path
 from .proto import SnapshotSlim
 import sys
 import traceback
-
-
-registered_parsers = parsers_store.registered_parsers
 
 
 class parser_context:
