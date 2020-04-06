@@ -97,6 +97,7 @@ def client_hello():
 
 @app.route('/config')
 def server_config():
+    print('New connection for /config!')
     return serverInst.server_config()
 
 
