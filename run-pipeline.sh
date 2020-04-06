@@ -23,7 +23,7 @@ docker run -d -it --rm --name bs_rabbit_host --network=bsnetwork -p 5672:5672 -p
 docker run --rm --name bs_server_host --network=bsnetwork -d -p 8000:8000 bs_server
 docker run --rm --name bs_saver_host --network=bsnetwork -d bs_saver
 docker run --rm --name bs_api_host --network=bsnetwork -d -p 5000:5000 bs_api
-docker run --rm --name bs_gui_host --network=bsnetwork -d -p 5000:5000 bs_gui
+docker run --rm --name bs_gui_host --network=bsnetwork -d -p 8080:8080 bs_gui
 # BrainStorm parsers
 docker run --rm --name bs_parse_col_img_host --network=bsnetwork -d -e parser_name=color_image bs_parser
 docker run --rm --name bs_parse_dep_img_host --network=bsnetwork -d -e parser_name=depth_image bs_parser
