@@ -48,6 +48,7 @@ class WebServer:
         available for the snashot
         '''
         results_htmls = []
+        available_results.sort()
         for result_name in available_results:
             # Compose the right parser template URI
             plugin_templat_path = f'results_plugins/{result_name}.html'
