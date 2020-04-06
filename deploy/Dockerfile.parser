@@ -1,0 +1,4 @@
+FROM bs_base:latest
+ENV parser_name unspecified
+CMD ["sh", "-c", "echo ${parser_name}"]
+CMD ["sh", "-c", "python -m BrainStorm.parsers run-parser ${parser_name} rabbitmq://bs_rabbit_host:5672/"]

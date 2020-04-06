@@ -1,24 +1,31 @@
-sudo docker build --tag bs_base -f deploy/Dockerfile.bs_base .
-sudo docker build --tag bs_server -f deploy/Dockerfile.server .
-sudo docker build --tag bs_pwd -f deploy/Dockerfile.pwd .
+# Build images
+docker build --tag bs_base -f deploy/Dockerfile.bs_base .
+docker build --tag bs_api -f deploy/Dockerfile.api .
+docker build --tag bs_gui -f deploy/Dockerfile.gui .
+docker build --tag bs_parser -f deploy/Dockerfile.parser .
+docker build --tag bs_saver -f deploy/Dockerfile.saver .
+docker build --tag bs_server -f deploy/Dockerfile.server .
 
-sudo docker network create bsnetwork
+# Kill old containers
+docker container kill $(docker ps -q -f "name=bs_")
+
+# Create docker infrastructure - virtual network and local volumes
+docker network create bsnetwork
 mkdir /tmp/brainstorm
 mkdir /tmp/brainstorm/data
 mkdir /tmp/brainstorm/resources
 
-sudo docker volume create --name data
-sudo docker volume create --name resources
+# 3rd party containers - MQ and DB
+docker run -d --rm --name bs_postgres_host --network=bsnetwork -p 5432:5432 -e POSTGRES_PASSWORD=1234 postgres;
+docker run -d -it --rm --name bs_rabbit_host --network=bsnetwork -p 5672:5672 -p 15672:15672 rabbitmq:3-management;
 
-sudo docker kill postgres; sudo docker rm postgres;
-sudo docker run --name postgres --network=bsnetwork -p 5432:5432 -e POSTGRES_PASSWORD=1234 -d postgres;
-sudo docker kill rabbit_host; sudo docker rm rabbit_host; 
-sudo docker run -d -it --rm --name rabbit_host --network=bsnetwork -p 5672:5672 -p 15672:15672 rabbitmq:3-management;
-
-
-sudo docker kill bs_server_host; sudo docker rm bs_server_host; 
-sudo docker run --name bs_server_host --network=bsnetwork -d -p 8000:8000 bs_server
-
-
-sudo docker kill bs_pwd_host; sudo docker rm bs_pwd_host; 
-sudo docker run --name bs_pwd_host -v /tmp/brainstorm/data:/tmp/brainstorm/data --network=bsnetwork bs_pwd
+# BrainStorm components
+docker run --rm --name bs_server_host --network=bsnetwork -d -p 8000:8000 bs_server
+docker run --rm --name bs_saver_host --network=bsnetwork -d bs_saver
+docker run --rm --name bs_api_host --network=bsnetwork -d -p 5000:5000 bs_api
+docker run --rm --name bs_gui_host --network=bsnetwork -d -p 5000:5000 bs_gui
+# BrainStorm parsers
+docker run --rm --name bs_parse_col_img_host --network=bsnetwork -d bs_parser -e parser_name=color_image
+docker run --rm --name bs_parse_dep_img_host --network=bsnetwork -d bs_parser -e parser_name=depth_image
+docker run --rm --name bs_parse_feel_host --network=bsnetwork -d bs_parser -e parser_name=feelings
+docker run --rm --name bs_parse_pose_host --network=bsnetwork -d bs_parser -e parser_name=pose

@@ -1,0 +1,3 @@
+FROM bs_base:latest
+EXPOSE 5000
+CMD python -m BrainStorm.api run-server postgres://postgres:1234@bs_postgres_host:5432/postgres -h 0.0.0.0 -p 5000

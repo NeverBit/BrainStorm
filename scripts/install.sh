@@ -5,6 +5,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 
 function main {
+	sudo apt install libpq-dev
     python -m virtualenv .env --prompt "[brain-storm] "
     find .env -name site-packages -exec bash -c 'echo "../../../../" > {}/self.pth' \;
     .env/bin/pip install -U pip

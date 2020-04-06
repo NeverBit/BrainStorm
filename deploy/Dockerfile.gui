@@ -1,0 +1,3 @@
+FROM bs_base:latest
+EXPOSE 8080
+CMD python -m BrainStorm.gui run-server postgres://postgres:1234@bs_postgres_host:5432/postgres -h 0.0.0.0 -p 8080

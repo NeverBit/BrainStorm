@@ -1,0 +1,2 @@
+FROM bs_base:latest
+CMD python -m BrainStorm.saver run-saver postgres://postgres:1234@bs_postgres_host:5432/postgres rabbitmq://bs_rabbit_host:5672/
