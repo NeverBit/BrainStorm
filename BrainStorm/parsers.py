@@ -39,10 +39,8 @@ def run_parser_once(name, input):
     snapshot = SnapshotSlim.fromDict(input_json)
 
     # Make parser context
-    res_path = Path('resources')
-    print('Trying to create resources dir')
+    res_path = Path('/tmp/brainstorm/resources')
     res_path.mkdir(exist_ok=True)
-    print('Created(?) resources dir')
     context = parser_context(res_path)
     parser_results = parse_func(context, snapshot)
     # Wrap the parer results in a unified format for the server
@@ -69,7 +67,7 @@ def run_parser_service(name, connection_string):
     # Define parse & publish callback
     def callback(channel, method, properties, body):
         snapshot = SnapshotSlim.fromDict(json.loads(body))
-        res_path = Path('C:\\resources')
+        res_path = Path('/tmp/brainstorm/resources')
         res_path.mkdir(exist_ok=True)
         context = parser_context(res_path)
         parser_results = parse_func(context, snapshot)

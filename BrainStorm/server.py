@@ -106,7 +106,7 @@ def client_snapshot():
     return serverInst.client_snapshot()
 
 
-def run_server(host, port, publish, data_dir='data'):
+def run_server(host, port, publish, data_dir='/tmp/brainstorm/data'):
     global serverInst
     serverInst = SnapshotsServer(data_dir, publish)
     print(f' @@@ Debug run-server and serverInst is {serverInst}')

@@ -1,0 +1,6 @@
+FROM bs_base:latest
+CMD pwd
+CMD ls /tmp/
+CMD ls /tmp/brainstorm
+CMD ls /tmp/brainstorm/data
+CMD touch /tmp/brainstorm/data/woot.txt
