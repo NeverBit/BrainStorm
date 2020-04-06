@@ -7,6 +7,15 @@ class rabbitmq_conn:
         self.host = host
         self.port = port
         self.exchange = exchange
+        # Make sure the mq is accessible
+        while True:
+            try:
+                print('Trying MQ...')
+                self.open()
+                self.close()
+                break
+            except Exception:
+                continue
 
     def open(self):
         # Create connection to MQ
