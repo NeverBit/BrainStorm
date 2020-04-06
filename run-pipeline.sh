@@ -18,6 +18,7 @@ docker build --tag bs_server -f deploy/Dockerfile.server .
 
 # Kill old containers
 docker container kill $(docker ps -q -f "name=bs_")
+docker container rm $(docker ps -q -f "name=bs_")
 
 # Create docker infrastructure - virtual network and local shared folders
 docker network create bsnetwork
