@@ -25,7 +25,7 @@ docker run --rm --name bs_saver_host --network=bsnetwork -d bs_saver
 docker run --rm --name bs_api_host --network=bsnetwork -d -p 5000:5000 bs_api
 docker run --rm --name bs_gui_host --network=bsnetwork -d -p 5000:5000 bs_gui
 # BrainStorm parsers
-docker run --rm --name bs_parse_col_img_host --network=bsnetwork -d bs_parser -e parser_name=color_image
-docker run --rm --name bs_parse_dep_img_host --network=bsnetwork -d bs_parser -e parser_name=depth_image
-docker run --rm --name bs_parse_feel_host --network=bsnetwork -d bs_parser -e parser_name=feelings
-docker run --rm --name bs_parse_pose_host --network=bsnetwork -d bs_parser -e parser_name=pose
+docker run --rm --name bs_parse_col_img_host --network=bsnetwork -d -e parser_name=color_image bs_parser
+docker run --rm --name bs_parse_dep_img_host --network=bsnetwork -d -e parser_name=depth_image bs_parser
+docker run --rm --name bs_parse_feel_host --network=bsnetwork -d -e parser_name=feelings bs_parser
+docker run --rm --name bs_parse_pose_host --network=bsnetwork -d -e parser_name=pose bs_parser
