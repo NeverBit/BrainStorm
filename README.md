@@ -23,7 +23,7 @@ Begin by activating the virtual enviroment:
 > ./scripts/install.sh
 > source .env/bin/activate
 ```
-Now you can run any of the available modules which construct the entire system:
+The following modules of the system are runnable:
 ```
 api, cli, client, gui, parsers, saver, server 
 ```
