@@ -8,12 +8,12 @@ import io
 import struct
 import time
 import traceback
-
 import pytest
-
 from BrainStorm.client import upload_sample
+from BrainStorm.client import trim_snapshot
 from BrainStorm import client
 from BrainStorm import proto
+from BrainStorm import image
 
 _SERVER_ADDRESS = '127.0.0.1', 5000
 _SERVER_ADDRESS_FOR_UT = '127.0.0.1:5000'
@@ -41,26 +41,6 @@ def get_mind_sample():
 
     snapshot = b''
     return _TEST_HEADER_v2 + snapshot
-
-
-def DISABLED_test_connection(get_message, get_mind_sample):
-    upload_sample(*_SERVER_ADDRESS, get_mind_sample)
-    message = get_message()
-    assert message
-
-
-def DISABLED_test_hello_msg_recvd(get_message, get_mind_sample):
-    upload_sample(*_SERVER_ADDRESS, get_mind_sample)
-    message = get_message()
-    h = proto.Hello.deserialize(message)
-    assert h
-
-
-def DISABLED_test_name_recvd(get_message, get_mind_sample):
-    upload_sample(*_SERVER_ADDRESS, get_mind_sample)
-    message = get_message()
-    h = proto.Hello.deserialize(message)
-    assert h.uname == _H1_NAME
 
 
 def _run_server(pipe):
@@ -194,3 +174,70 @@ def test_config_requested(get_mind_sample, tmp_path):
     for uri in dummy_inst.post_uris:
         config_in_any |= 'hello' in uri
     assert config_in_any
+
+
+def test_trim_snapshot():
+    class dummy_obj:
+        pass
+    col_img = image(2, 2, b'\xff\x00\x00' * 4)
+    dep_img = image(1, 1, struct.pack('!f', 0.75))
+    trans = dummy_obj()
+    trans.x = 1.1
+    trans.y = 2.1
+    trans.z = 3.1
+    rot = dummy_obj()
+    rot.x = 1.1
+    rot.y = 2.2
+    rot.z = 3.3
+    rot.w = 4.4
+    feel = dummy_obj()
+    feel.hunger = 1.0
+    feel.thirst = 0.0
+    feel.exhaustion = -1.0
+    feel.happiness = 1.0
+    s1 = proto.Snapshot(
+        proto.UserInfo(42, 'Name Name', 10101, 'm'),
+        2,
+        trans,
+        rot,
+        col_img,
+        dep_img,
+        feel)
+
+    trim_snap = trim_snapshot(s1,[])
+    
+    assert trim_snap
+    assert trim_snap is not s1
+
+def test_trim_snapshot():
+    class dummy_obj:
+        pass
+    col_img = image(2, 2, b'\xff\x00\x00' * 4)
+    dep_img = image(1, 1, struct.pack('!f', 0.75))
+    trans = dummy_obj()
+    trans.x = 1.1
+    trans.y = 2.1
+    trans.z = 3.1
+    rot = dummy_obj()
+    rot.x = 1.1
+    rot.y = 2.2
+    rot.z = 3.3
+    rot.w = 4.4
+    feel = dummy_obj()
+    feel.hunger = 1.0
+    feel.thirst = 0.0
+    feel.exhaustion = -1.0
+    feel.happiness = 1.0
+    s1 = proto.Snapshot(
+        proto.UserInfo(42, 'Name Name', 10101, 'm'),
+        2,
+        trans,
+        rot,
+        col_img,
+        dep_img,
+        feel)
+
+    trim_snap = trim_snapshot(s1,['pose'])
+    
+    assert trim_snap
+    assert trim_snap is not s1
