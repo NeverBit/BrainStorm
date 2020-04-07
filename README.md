@@ -100,7 +100,15 @@ It's 2 functions describe it's abilities:
 * ```get_storage_path``` - Allows the parser to get a path to the *output* 'binary blobs' storage where it can save it's results
 An example of using the 2 functions can be found in the ```col_img_parser.py```
 
-
+Finally, to run the parser add this line to the end of ```run-pipelin`.s``:
+```
+docker run -d -v $DATA_DIR:$DATA_DIR -v $RES_DIR:$RES_DIR --network=bsnetwork --name bs_parse_pose_host -e parser_name=*parser_field* bs_parser
+```
+replacing ```*parser_field*``` with the value in the ```field``` member of the parser.
+When running from the command line just launch a process for your parser along with the others:
+```
+> python -m cortex.parsers run-parser '*parser_field*' 'rabbitmq://127.0.0.1:5672/'
+```
 
 ### Extra: Visualization of new parsers' results
 By following the rules above a parser is automaticlly detected, it's results are saved and accessible to the user via the API (using the cli) or the GUI.
