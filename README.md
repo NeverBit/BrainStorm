@@ -35,7 +35,7 @@ Substitute 'api' with any other module.
 To begin exploring the various commands and arguments you can run the module without a command
 to get the help page:
 ```
-> python -m BrainStorm.api [command] [args + options]
+> python -m BrainStorm.api
 Usage: BrainStorm.api [OPTIONS] COMMAND [ARGS]...
 
 Options:
