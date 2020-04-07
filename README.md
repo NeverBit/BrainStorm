@@ -13,7 +13,7 @@ Next you should choose from the several options to use the code
 ### Running with Docker
 The deployment script launches the ```server```, ```parsers```, ```saver```, ```api``` and ```gui``` modules combined with a rabbitmq and postgresql containers all linked to eachothers.
 ```
-> ./run-pipeline.sh # sudo might be required for docker
+> ./run-pipeline.sh     # sudo might be required for docker
 ```
 Then use the ```client```, ```cli``` as described in the *Manully running from the commandline* or browser to 127.0.0.1:8080 to see the GUI.
 
