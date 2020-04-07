@@ -196,3 +196,30 @@ def test_translation_feelings(tmp_path):
     assert 'thirst' in j
     assert 'exhaustion' in j
     assert 'happiness' in j
+
+
+
+def test_translation_feelings(tmp_path):
+    my_dir = tmp_path / 'my_dir'
+    my_dir.mkdir()
+    feel = {'hunger': 1.1,
+            'thirst': 2.2,
+            'exhaustion': 3.3,
+            'happiness': 4.4,
+            }
+
+    snap = SnapshotSlim(
+        TEST_USER_INFO,
+        TEST_DATE_TIME,
+        None,
+        None,
+        None,
+        None,
+        feel)
+    res = parsers.run_parser('feelings', json.dumps(snap.toDict()))
+    j = json.loads(res)
+    j = json.loads(j['parser_res'])
+    assert 'hunger' in j
+    assert 'thirst' in j
+    assert 'exhaustion' in j
+    assert 'happiness' in j
