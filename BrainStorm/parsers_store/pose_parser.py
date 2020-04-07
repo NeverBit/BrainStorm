@@ -5,8 +5,7 @@ def parse_pose(context, snapshot):
     pose_dict = {'translation': snapshot.pose.translation,
                  'rotation': snapshot.pose.rotation
                  }
-    j = json.dumps(pose_dict)
-    return j
+    return json.dumps(pose_dict)
 
 
 parse_pose.field = "pose"
