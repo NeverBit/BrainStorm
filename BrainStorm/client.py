@@ -78,6 +78,8 @@ def upload_sample(host, port, path):
         hello_msg = user_info.toDict()
         # Sending Hello in hopes of getting a cookie 'token'
         # for the rest of the session
+        # note: The cookie is automaticlly saved in the
+        # 'http session'
         sess.post(f'{base_url}/hello', json=hello_msg)
         print('Got Hello response.')
 
