@@ -26,18 +26,17 @@ The parse method recieves 2 parameters: A **'parser context'** object and the **
 The snapshot object is of type ```SnapshotSlim``` from ```BrainStorm.proto```. You can check this file to see the different fields of the snapshot.
 
 ##### Parser Context parameter
-The parser context object's role is to allow parsers intreaction with binary inputs/outputs.
-It's 2 functions describe it's abilities:
+The context provides 2 functions to help parsers with binary inputs/outputs:
 * ```get_encoded_image``` - Allows the parser to get images raw data as received in the ```server``` and kept in a 'binary blobs' storage.
 * ```get_storage_path``` - Allows the parser to get a path to the *output* 'binary blobs' storage where it can save it's results
-An example of using the 2 functions can be found in the ```col_img_parser.py```
+For reference, the ```col_img_parser.py``` parser utilizes both of the above.
 
 Finally, to run the parser add this line to the end of ```run-pipeline.sh``:
 ```
 docker run -d -v $DATA_DIR:$DATA_DIR -v $RES_DIR:$RES_DIR --network=bsnetwork --name bs_parse_pose_host -e parser_name=*parser_field* bs_parser
 ```
 replacing ```*parser_field*``` with the value in the ```field``` member of the parser.
-When running from the command line just launch a process for your parser along with the others:
+OR when running from the command line also run a proccess for your new parser:
 ```
 > python -m cortex.parsers run-parser '*parser_field*' 'rabbitmq://127.0.0.1:5672/'
 ```
