@@ -18,7 +18,7 @@ parse_pose.field = "pose"
 ```
 **The following rules must be kept so the parser can be detected:**
 1. The parsnig method MUST start with **"parse_"**
-2. A member called ```field``` must be assigned to the method - It's value should be a string identifing the information the parser is extracting.
+2. A member called ```field``` must be assigned to the method - It should be any unique identifier (string) not used by other parsers (Using the name of the parsed field is recommended but not a must)
 3. The return object must be a **json**
 
 The parse method recieves 2 parameters: A **'parser context'** object and the **'snapshot'** object to parse.
