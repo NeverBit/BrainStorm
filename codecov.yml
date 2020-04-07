@@ -1,0 +1,2 @@
+ignore:
+  - "BrainStorm/cli.py"  # ignore folders and all its contents
