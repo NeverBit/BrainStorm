@@ -45,17 +45,17 @@ Commands:
 You could also import BrainStorm as a package in your code
 ``` import BrainStorm```
 Without importing sub-modules several main classes and functions are accessible. Including:
-```
-The client's upload_sample function
-The DbBase, Reader classes to read from the DB
-The GUI's WebServer
-The image class used to represent images in snapshots
-The get_reader function used to get readers for .mind files
-The registered_parsers dictionary holding all parsers in the system
-The Snapshot, SnapshotSlim classes used to represent snapshots
-The run_server function to run a snapshot-collecting server
-The Saver class used to save parser results to the DB
-```
+
+* The client's ```upload_sample``` function
+* The ```DbBase```, ```Reader``` classes to read from the DB
+* The GUI's ```WebServer``` class
+* The ```image``` class used to represent images in snapshots
+* The ```get_reader``` function used to get readers for .mind files
+* The ```registered_parsers``` dictionary holding all parsers in the system
+* The ```Snapshot```, ```SnapshotSlim``` classes used to represent snapshots
+* The ```run_server``` function to run a snapshot-collecting server
+* The ```Saver``` class used to save parser results to the DB
+
 
 ## Extend the system: Parsers
 The system uses several stand-alone parsers to retrieve information from the snapshots.
