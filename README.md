@@ -15,7 +15,7 @@ The deployment script launches the ```server```, ```parsers```, ```saver```, ```
 ```
 > ./run-pipeline.sh     # sudo might be required for docker
 ```
-Then use the ```client```, ```cli``` as described in the *"Manully running from the command line"* or browser to 127.0.0.1:8080 to see the GUI.
+Then use the ```client```, ```cli``` as described in the *"Manully running from the command line"* or browse to http://127.0.0.1:8080 to see the GUI.
 
 ### Manully running from the command line
 Begin by activating the virtual enviroment:
