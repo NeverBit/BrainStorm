@@ -11,25 +11,29 @@ First clone or download the repo and enter the directory
 Next you should choose from the several options to use the code
 
 ### Running with Docker
-Inclosed in the repo is the ```run-pipeline.sh``` script which set-ups the main system pipeline
-in several docker containers.
-The script launches the ```server```, ```parsers```, ```saver```, ```api``` and ```gui``` modules combined with a rabbitmq and postgresql containers all linked to eachothers.
-From there, Using the system can be done invoking the ```client``` to upload samples to the system
-and using the ```cli``` or a browser (gui is accessible at 127.0.0.1:8080) to see the results.
+The deployment script launches the ```server```, ```parsers```, ```saver```, ```api``` and ```gui``` modules combined with a rabbitmq and postgresql containers all linked to eachothers.
+```
+> ./run-pipeline.sh # sudo might be required for docker
+```
+Then use the ```client```, ```cli``` as described in the *Manully running from the commandline* or browser to 127.0.0.1:8080 to see the GUI.
 
-### Manully usuing the CLI
-The project consists of several modlues which should be run as different process to create the entire system.
-The runnable modules are:
+### Manully running from the commandline
+Begin by activating the virtual enviroment:
+```
+> ./scripts/install.sh
+> source .env/bin/activate
+```
+Now you can run any of the available modules which construct the entire system:
 ```
 api, cli, client, gui, parsers, saver, server 
 ```
 Each should be run with python's ```-m``` flag like so:
 ```
-python -m BrainStorm.api [command] [args + options]
+> python -m BrainStorm.api [command] [args + options]
 ```
 Substitute 'api' with any other module.
-To beging exploring the various commands are arguments you can run the module without a command
-to get a help page
+To begin exploring the various commands and arguments you can run the module without a command
+to get the help page:
 ```
 > python -m BrainStorm.api [command] [args + options]
 Usage: BrainStorm.api [OPTIONS] COMMAND [ARGS]...
