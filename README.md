@@ -57,6 +57,7 @@ Without importing sub-modules several main classes and functions are accessible.
 * The ```Saver``` class used to save parser results to the DB
 
 
+
 ## Extend the system: Parsers
 The system uses several stand-alone parsers to retrieve information from the snapshots.
 Every parser module is dynamicly located and registered when the system launches.
@@ -94,6 +95,7 @@ It's 2 functions describe it's abilities:
 * ```get_encoded_image``` - Allows the parser to get images raw data as received in the ```server``` and kept in a 'binary blobs' storage.
 * ```get_storage_path``` - Allows the parser to get a path to the *output* 'binary blobs' storage where it can save it's results
 An example of using the 2 functions can be found in the ```col_img_parser.py```
+
 
 
 ### Extra: Visualization of new parsers' results
