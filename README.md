@@ -64,6 +64,6 @@ Without importing sub-modules several main classes and functions are accessible.
 
 ## Extend the system: Parsers
 The system uses several stand-alone parsers to retrieve information from the snapshots.
-Every parser module is automatically discovered and loaded when the system launches.
+Registering a new parser is as simple as creating a .py file and running a new 'run-parsre' process
 
 Please refer to [Adding a parser](adding_a_parser.md) for the instructions.
