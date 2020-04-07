@@ -38,7 +38,7 @@ docker run -d -v $DATA_DIR:$DATA_DIR -v $RES_DIR:$RES_DIR --network=bsnetwork --
 replacing ```*parser_field*``` with the value in the ```field``` member of the parser.
 OR when running from the command line also run a process for your new parser:
 ```
-> python -m cortex.parsers run-parser '*parser_field*' 'rabbitmq://127.0.0.1:5672/'
+> python -m BrainStorm.parsers run-parser '*parser_field*' 'rabbitmq://127.0.0.1:5672/'
 ```
 
 ### Extra: Visualization of new parsers' results
