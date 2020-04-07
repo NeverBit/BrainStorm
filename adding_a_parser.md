@@ -51,9 +51,9 @@ To allow decoupling of parser additions and their visualization code, a default 
 The default plug-in simply *displays the recorded json* returned from the parser, an example for that can be seen for the 'pose' parser.
 
 ##### Adding a visualisation plug-in
-The GUI is build using flask and the different results plug-ins are each rendered using jinja templates.
+The GUI is build using flask and the different results plug-ins are each rendered using **Jinja templates**.
 The templates are located at ```BrainStorm\templates\results_plugins\```
 
-To add a new plugin create a jinja template in the with the name ```*parser_field*.html``` in the above directory. Note if the name isn't exactly the string saved in the parser method's ```field``` memeber the plug-in won't be recognized.
+To add a new plugin create a template with the name ```*parser_field*.html``` in the above directory. Note if the name isn't exactly the **unique id** in the parser's ```field``` memeber the plug-in won't be recognized.
 
-It's encouraged to review the existing plug-ins in the ```BrainStorm\templates\results_plugins\``` to get an idea of how to make a new template.
+It's encouraged to browse the existing plug-ins in the ```BrainStorm\templates\results_plugins\``` to get an idea of how to make a new templates.
