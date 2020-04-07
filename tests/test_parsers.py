@@ -27,7 +27,6 @@ class parser_context:
         filepath = self.dir / filename
         with filepath.open('w') as f:
             f.write(data)
-        print(f' @@@ DEBUG Saved {len(data)} bytes to {filepath}')
 
     def set_encoded_image_to_return(self, img):
         self.enc_img = img

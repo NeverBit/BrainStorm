@@ -51,7 +51,7 @@ You could also import BrainStorm as a package in your code
 Without importing sub-modules several main classes and functions are accessible. Including:
 
 * The client's ```upload_sample``` function
-* The ```DbBase```, ```Reader``` classes to read from the DB
+* The ```Reader``` classes to read from the DB
 * The GUI's ```WebServer``` class
 * The ```image``` class used to represent images in snapshots
 * The ```get_reader``` function used to get readers for .mind files

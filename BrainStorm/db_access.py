@@ -7,9 +7,13 @@ import sqlalchemy
 parsers_names = list(registered_parsers.keys())
 
 
-class DbBase:
+class Reader:
+    '''
+    Base class to access the database with some basic read
+    functions. Can be inherited to extend read/write
+    functionallity
+    '''
     def __init__(self, database_url):
-        print(f'Saver Connecting to: {database_url}')
         self.engine = create_engine(database_url)
         # Create tables in DB (if required)
         meta = MetaData()
@@ -42,18 +46,12 @@ class DbBase:
 
         meta.create_all(self.engine)
 
-
-class Reader(DbBase):
-    def __init__(self, database_url):
-        DbBase.__init__(self, database_url)
-
     def get_users(self):
         ''' Get all users from the DB '''
         query = self.users_table.select()
         connection = self.engine.connect()
         users = {}
         for entry in connection.execute(query):
-            print(f'Iterating user {entry} DICT: {dict(entry)}')
             entryDict = dict(entry)
             users[entryDict['id']] = entryDict['name']
         connection.close()
@@ -65,7 +63,6 @@ class Reader(DbBase):
             and_(self.users_table.c.id == uid))
         connection = self.engine.connect()
         found = connection.execute(query).fetchone()
-        print(f"Finished getting user : {found}")
         connection.close()
         if not found:
             return None
@@ -76,7 +73,6 @@ class Reader(DbBase):
         Returns the row of the matching snapshot entry or None if not in DB
         '''
         # Get current available_results
-        print(f" getting snapshot by USER ID: {uid}")
         query = self.snapshots_table.select().where(
             and_(self.snapshots_table.c.uid == uid))
         connection = self.engine.connect()
@@ -93,13 +89,11 @@ class Reader(DbBase):
         Returns the row of the matching snapshot entry or None if not in DB
         '''
         # Get current available_results
-        print(f" getting snapshot UID: {uid} , SNAP ID: {snapshot_id}")
         query = self.snapshots_table.select().where(
             and_(self.snapshots_table.c.uid == uid,
                  self.snapshots_table.c.id == snapshot_id))
         connection = self.engine.connect()
         match = connection.execute(query).fetchone()
-        print(f"Finished getting snapshot : {match}")
         connection.close()
         if match:
             return dict(match)
@@ -110,13 +104,11 @@ class Reader(DbBase):
         Returns the row of the matching snapshot entry or None if not in DB
         '''
         # Get current available_results
-        print(f" getting snapshot : {uid} - {datetime}")
         query = self.snapshots_table.select().where(
             and_(self.snapshots_table.c.uid == uid,
                  self.snapshots_table.c.datetime == datetime))
         connection = self.engine.connect()
         match = connection.execute(query).fetchone()
-        print(f"Finished getting snapshot : {match}")
         connection.close()
         return match
 

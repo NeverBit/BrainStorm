@@ -4,12 +4,14 @@ import pika
 
 
 class rabbitmq_conn:
+    ''' Rabbit MQ client '''
     def __init__(self, host, port, exchange):
         self.host = host
         self.port = port
         self.exchange = exchange
 
     def open(self):
+        ''' Open the connection '''
         # Create connection to MQ (try multiple times)
         for i in range(100):
             try:
@@ -25,14 +27,17 @@ class rabbitmq_conn:
                 continue
 
     def close(self):
+        ''' Closes the connection '''
         self.connection.close()
 
     def publish(self, msg, topic='default_topic'):
+        ''' publishes a message using the connection '''
         # publishing to the entire exchange
         self.channel.basic_publish(exchange=self.exchange, routing_key=topic,
                                    body=msg)
 
     def start_consume(self, callback, topics=None):
+        ''' Start listening for messages in a specific topic '''
         # Creating new nameless queue in the exchange and consuming from it
         result = self.channel.queue_declare(queue='', exclusive=True)
         queue_name = result.method.queue

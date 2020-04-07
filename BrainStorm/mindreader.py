@@ -31,6 +31,9 @@ def reader(versionNum):
 
 @reader(1)
 class reader_v1:
+    '''
+    Read old-format binary mind files
+    '''
     def __init__(self, mindStream):
         self.file = mindStream
         # Reading header
@@ -68,7 +71,6 @@ class reader_v1:
         # Emotions
         hunger, thirst, exha, happy = struct.unpack('ffff', self.file.read(16))
         emotions = (hunger, thirst, exha, happy)
-        print(' @@@ DEBUG adding UID to snapshot v1 in ctor')
         return Snapshot(
             self.uid,
             time,
@@ -81,9 +83,11 @@ class reader_v1:
 
 @reader(2)
 class reader_v2:
+    '''
+    Read protobuf-based mind files
+    '''
     def __init__(self, mindStream):
         self.file = mindStream
-        self.count = 0
 
         # Reading header
         buf = self.file.read(4)
@@ -93,7 +97,6 @@ class reader_v2:
         buf = self.file.read(userLen)
         if not buf:
             return
-        print(f'user len: {userLen}')
         user = UserPb()
         user.ParseFromString(buf)
 
@@ -111,28 +114,13 @@ class reader_v2:
         buf = self.file.read(4)
         if not buf:
             return
-        print(f'@@@ DEBUG Reading new Snapshot #{self.count}.')
-        self.count += 1
 
         snapLen, = struct.unpack('I', buf)
-        print(f'@@@ DEBUG snap len: {snapLen}')
         buf = self.file.read(snapLen)
         if not buf:
             return
         snap = SnapshotPb()
         snap.ParseFromString(buf)
-
-        # TODO: for exporting very slim mind files
-        # snap.color_image.height = 2
-        # snap.color_image.width = 2
-        # snap.color_image.data =
-        # b'\x00\x00\x00\x44\x44\x44\x77\x77\x77\xff\xff\xff'
-        # snap.depth_image.height = 2
-        # snap.depth_image.width = 2
-        # snap.depth_image.data[:] = [0.1, 0.2, 0.3, 0.4]
-
-        # newStr = snap.SerializeToString()
-        # print(newStr)
 
         col_img = snap.color_image
         col_img = image(col_img.height, col_img.width, col_img.data)

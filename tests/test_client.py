@@ -77,9 +77,7 @@ def _run_server(pipe):
 
 def _handle_connection(connection, pipe):
     with connection:
-        print('a')
         header_data = _receive_all(connection, 4)
-        print('b')
         leng, = struct.unpack('!I', header_data)
         data = _receive_all(connection, leng)
         pipe.send(data)
@@ -123,7 +121,6 @@ class dummy_session:
         pass
 
     def get(self, uri, *args, **kwargs):
-        print(f'Get Called for uri: {uri}')
         self.get_uris.append(uri)
         self.get_count += 1
         res = dummy_response()
@@ -158,7 +155,6 @@ def test_hello_sent(get_mind_sample, tmp_path):
     try:
         upload_sample(*_SERVER_ADDRESS, str(sam_path))
     except Exception as e:
-        print('here:')
         traceback.print_exc()
         print(e)
         pass

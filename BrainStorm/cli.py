@@ -7,6 +7,10 @@ import traceback
 
 
 def get_response_or_quit(url):
+    '''
+    Generic function which tries to get information
+    from the API serve. Exists the program if fails
+    '''
     try:
         resp = requests.get(url)
     except Exception:
@@ -27,6 +31,7 @@ def main():
 @click.option('-h', '--host', type=str, default='127.0.0.1')
 @click.option('-p', '--port', type=str, default=5000)
 def get_users(host, port):
+    ''' cli handler to get a list of users '''
     resp = get_response_or_quit(f'http://{host}:{port}/users')
     users = json.loads(resp.content)
     if not users:
@@ -43,6 +48,7 @@ def get_users(host, port):
 @click.option('-p', '--port', type=str, default=5000)
 @click.argument('uid', type=int)
 def get_user(host, port, uid):
+    ''' cli handler to get a user's info '''
     resp = get_response_or_quit(f'http://{host}:{port}/users/{uid}')
     fields = json.loads(resp.content)
 
@@ -60,6 +66,7 @@ def get_user(host, port, uid):
 @click.option('-p', '--port', type=str, default=5000)
 @click.argument('uid', type=int)
 def get_snapshots(host, port, uid):
+    ''' cli handler to get a list of snapshots '''
     resp = get_response_or_quit(f'http://{host}:{port}/users/{uid}/snapshots')
     snaps = json.loads(resp.content)
 
@@ -77,6 +84,7 @@ def get_snapshots(host, port, uid):
 @click.argument('uid', type=int)
 @click.argument('snap_id', type=int)
 def get_snapshot(host, port, uid, snap_id):
+    ''' cli handler to get a speicfic snapshot '''
     url = f'http://{host}:{port}/users/{uid}/snapshots/{snap_id}'
     resp = get_response_or_quit(url)
     fields = json.loads(resp.content)
@@ -101,6 +109,7 @@ def get_snapshot(host, port, uid, snap_id):
 @click.argument('snap_id', type=int)
 @click.argument('parser', type=str)
 def get_result(host, port, uid, snap_id, parser):
+    ''' cli handler to get a speicfic result from a snapshot '''
     url = f'http://{host}:{port}/users/{uid}/snapshots/{snap_id}/{parser}'
     resp = get_response_or_quit(url)
     fields = json.loads(resp.content)

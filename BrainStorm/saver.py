@@ -26,12 +26,10 @@ class Saver(Reader):
         query = query.where(and_(self.users_table.c.id == uid))
         connection = self.engine.connect()
         found = connection.execute(query).fetchone() is not None
-        print(f"Finished getting user : {found}")
         connection.close()
         if found:
             return
 
-        print(f"User not found, adding new user with id: {uid}")
         insert = self.users_table.insert().values(id=uid,
                                                   name=name,
                                                   birthday=bday,
@@ -55,7 +53,6 @@ class Saver(Reader):
         # the snapshot
         if match:
             # Snapshot already in DB, need an UPDATE
-            print('UPDATING existing snapshot')
             # Get previous results from match
             available_results = json.loads(match.available_results)
             # Add current new result if needed
@@ -73,7 +70,6 @@ class Saver(Reader):
         else:
             # Snapshot not in DB, need an INSERT
             avail_res_json = json.dumps([new_available_result])
-            print('INSERTING new snapshot')
             insert = self.snapshots_table.insert().values(
                 uid=uid, datetime=datetime, available_results=avail_res_json)
             res = connection.execute(insert)
@@ -112,7 +108,6 @@ class Saver(Reader):
         snapid = self.update_or_create_snapshot(uid, dt, parser_name)
         if not snapid:
             # Snapshot already has this info
-            print('Failure, content already added to snapshot')
             return
 
         parser_res = saver_msg['parser_res']
@@ -143,10 +138,8 @@ def run_saver_once(database, name, input):
 
     s = Saver(database)
 
-    print(' @@@ Calling Saver.Save()')
     s.save(name, saver_msg)
-    print(' @@@ Returned from Saver.Save()')
-
+    print('Saved')
 
 @main.command(name='run-saver')
 @click.argument(
@@ -166,18 +159,15 @@ def run_saver_service(database_str, mq_str):
 
     # Define save callback
     def callback(channel, method, properties, body):
-        print(f'SAVER got New MQ Message! Channel: {channel} Body: {body}')
+        print(f'Saver recieved  New MQ Message! Channel: {channel}')
         saver_msg = json.loads(body)
         s.save(channel, saver_msg)
 
     # Consume input mq
-    print(f' @@@ Debug Creating MQ connection input')
     con_to_input = mq.create_mq_connection(mq_str, 'parsers')
-    print(' @@@ Debug Opening MQ connection')
     con_to_input.open()
-    print(' @@@ Debug Opened MQ connection')
+    print('Starting to consume from MQ...')
     con_to_input.start_consume(callback)
-    print(' @@@ Debug start_consume MQ connection')
 
 
 if __name__ == '__main__':

@@ -3,10 +3,12 @@ import click
 from .image import image
 import json
 from . import mq
+import os
 from .parsers_store import registered_parsers
 from pathlib import Path
 from .proto import SnapshotSlim
 import sys
+import tempfile
 import traceback
 
 
@@ -26,21 +28,22 @@ class parser_context:
 def main():
     pass
 
-
-@main.command(name='parse')
-@click.argument('name', type=str)
-@click.argument('input', type=click.File('r'))
-def run_parser_once(name, input):
+def run_parser(name, data):
     # Resolve parser name to function
+    if name not in registered_parsers:
+        click.echo('No such parser!')
+        return
     parse_func = registered_parsers[name]
 
     # Parse input snapshot
-    input_json = json.loads(input.read())
-    snapshot = SnapshotSlim.fromDict(input_json)
+    data_dict = json.loads(data)
+    snapshot = SnapshotSlim.fromDict(data_dict)
 
     # Make parser context
-    res_path = Path('/tmp/brainstorm/resources')
-    res_path.mkdir(exist_ok=True)
+    res_path = Path(tempfile.gettempdir()) / 'brainstorm' / 'resources'
+    if not res_path.exists():
+        os.makedirs(str(res_path))
+        res_path.mkdir(exist_ok=True)
     context = parser_context(res_path)
     parser_results = parse_func(context, snapshot)
     # Wrap the parer results in a unified format for the server
@@ -50,8 +53,16 @@ def run_parser_once(name, input):
         'parser_name': name,
         'parser_res': parser_results
     }
-    saver_msg_json = json.dumps(saver_msg)
-    click.echo(saver_msg_json)
+    return json.dumps(saver_msg)
+    
+
+@main.command(name='parse')
+@click.argument('name', type=str)
+@click.argument('input', type=click.File('r'))
+def run_parser_once(name, input):
+    # Forward request to run_parser
+    res = run_parser(name, input.read())
+    click.echo(res)
 
 
 @main.command(name='run-parser')
@@ -59,6 +70,9 @@ def run_parser_once(name, input):
 @click.argument('connection_string', type=str)
 def run_parser_service(name, connection_string):
     # Resolve parser name to function
+    if name not in registered_parsers:
+        click.echo('No such parser!')
+        return
     parse_func = registered_parsers[name]
 
     # Create MQ connection towards saver

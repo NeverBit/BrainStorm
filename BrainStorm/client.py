@@ -66,41 +66,49 @@ def upload_sample(host, port, path):
         file = open(path, 'rb')
 
     base_url = f'http://{host}:{port}'
-    print(' @@@ Debug before reader start ')
     reader_class = get_reader(versionNum=2)
     s_reader = reader_class(file)
     with get_http_session() as sess:
-        print(' @@@ Calling /hello')
+        print('Sending Hello to server... ')
         user_info = UserInfo(
             s_reader.uid,
             s_reader.uname,
             s_reader.bday,
             s_reader.gender)
         hello_msg = user_info.toDict()
-        print(f'@@@ Hello Msg Content: {hello_msg}')
-        hello_response = sess.post(f'{base_url}/hello', json=hello_msg)
-        print(f'@@@ /hello Response: {hello_response}')
-        for x in sess.cookies:
-            print(f'Found a cookie for the session!: {x}')
-        print(' @@@ Calling /config')
+        # Sending Hello in hopes of getting a cookie 'token'
+        # for the rest of the session
+        sess.post(f'{base_url}/hello', json=hello_msg)
+        print('Got Hello response.')
+
+        print('Sending Config request to server...')
         conf_response = sess.get(f'{base_url}/config')
         supported_fields = json.loads(conf_response.content)
-        print((f'@@@ /config Response: {conf_response}, '
-               f'SupFlds: {supported_fields}'))
+        print('Got Config response.')
+        
         # Start reading snapshots
         snap = s_reader.read_snapshot()
+        count = 0
         while snap is not None:
-            print(' @@@ Debug got a snap')
+            print('Read new snapshot from file')
             snap_msg = trim_snapshot(snap, supported_fields)
             snapshot_dict = snap_msg.toDict()
             snapshot_bson = bson.dumps(snapshot_dict)
             headers = {'Content-type': 'application/bson'}
+            print(f'Sending Snapshot #{count} to server...')
             snap_response = sess.post(f'{base_url}/snapshot',
                                       data=snapshot_bson,
                                       headers=headers)
-            print(f' @@@ Debug snap sent! Response: {snap_response}')
+            if(snap_response.status_code != 200):
+                print((f'Server rejected the snapshot, '
+                      'status code: {snap_response.status_code}.'
+                      ' Aborting'))
+                break
+            print(f'Server accepted the snapshot!')
             snap = s_reader.read_snapshot()
-    print('done')
+            count += 1
+        else:
+            print('Done reading input file')
 
 
 @main.command(name='upload-sample')

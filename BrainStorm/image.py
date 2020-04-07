@@ -1,6 +1,12 @@
 class image:
+    '''
+    Represents and image in a snapshot
+    '''
     @classmethod
     def fromDict(cls, d):
+        '''
+        Parses an image from a dictionary
+        '''
         h = d["height"]
         w = d["width"]
         data = d["data"]
@@ -15,6 +21,9 @@ class image:
         return f'<Image: {self.height}x{self.width}>'
 
     def toDict(self):
+        '''
+        Encodes the image into a dictionary
+        '''
         return {
             "height": self.height,
             "width": self.width,

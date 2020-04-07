@@ -92,15 +92,18 @@ def main():
     pass
 
 
-@main.command(name='run-server')
-@click.option('-h', '--host', type=str, default='127.0.0.1')
-@click.option('-p', '--port', type=str, default=5000)
-@click.argument('database_url', type=str)
 def run_api_server(host, port, database_url):
     global readerInst
     readerInst = Reader(database_url)
     app.run(host=host, port=port, threaded=True)
 
+
+@main.command(name='run-server')
+@click.option('-h', '--host', type=str, default='127.0.0.1')
+@click.option('-p', '--port', type=str, default=5000)
+@click.argument('database_url', type=str)
+def run_api_server_cli(host, port, database_url):
+    run_api_server(host, port, database_url)
 
 if __name__ == '__main__':
     try:
