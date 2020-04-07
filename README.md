@@ -109,6 +109,6 @@ The default plug-in simply *displays the recorded json* returned from the parser
 The GUI is build using flask and the different results plug-ins are each rendered using jinja templates.
 The templates are located at ```BrainStorm\templates\results_plugins\```
 
-To add a new plugin create a jinja template in the with the name ```*parser_field*.html``` in the above directory. Note if the name isn't exactly the string saved in the parser method's ```field``` memeber the plug-in won't be regonized.
+To add a new plugin create a jinja template in the with the name ```*parser_field*.html``` in the above directory. Note if the name isn't exactly the string saved in the parser method's ```field``` memeber the plug-in won't be recognized.
 
 It's encouraged to review the existing plug-ins in the ```BrainStorm\templates\results_plugins\``` to get an idea of how to make a new template.
