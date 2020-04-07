@@ -78,7 +78,7 @@ def parse_pose(context, snapshot):
 
 parse_pose.field = "pose"
 ```
-The following rules must be kept so the parser can be detected:
+**The following rules must be kept so the parser can be detected:**
 1. The parsnig method MUST start with **"parse_"**
 2. A member called ```field``` must be assigned to the method - It's value should be a string identifing the information the parser is extracting.
 3. The return object must be a **json**
@@ -86,7 +86,7 @@ The following rules must be kept so the parser can be detected:
 The parse method recieves 2 parameters: A **'parser context'** object and the **'snapshot'** object to parse.
 
 ##### Snapshot parameter
-The snapshot object is of type 'SnapshotSlim' from the 'BrainStorm.proto' module. You can check this file to see the different fields of the snapshot.
+The snapshot object is of type ```SnapshotSlim``` from ```BrainStorm.proto```. You can check this file to see the different fields of the snapshot.
 
 ##### Parser Context parameter
 The parser context object's role is to allow parsers intreaction with binary inputs/outputs.
@@ -108,5 +108,7 @@ The default plug-in simply *displays the recorded json* returned from the parser
 ##### Adding a visualisation plug-in
 The GUI is build using flask and the different results plug-ins are each rendered using jinja templates.
 The templates are located at ```BrainStorm\templates\results_plugins\```
+
 To add a new plugin create a jinja template in the with the name ```*parser_field*.html``` in the above directory. Note if the name isn't exactly the string saved in the parser method's ```field``` memeber the plug-in won't be regonized.
+
 It's encouraged to review the existing plug-ins in the ```BrainStorm\templates\results_plugins\``` to get an idea of how to make a new template.
